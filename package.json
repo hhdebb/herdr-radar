@@ -1,6 +1,6 @@
 {
   "name": "herdr-radar",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Vendor logos, lifecycle-state glyphs, workspace grouping and a path tab-bar for the Herdr sidebar.",
   "license": "MIT",
   "private": true,

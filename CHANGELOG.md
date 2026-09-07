@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3
+
+- The daemon applies the chosen order (default `active`) when it starts, not only from the
+  server-startup hook; a first start by hand used to leave Herdr's own order until a restart.
+
 ## 1.0.2
 
 - Refuse to install when `[theme.custom]` or a `[ui.sidebar.*]` table already exists outside
