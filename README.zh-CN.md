@@ -53,10 +53,10 @@ herdr plugin install hhdebb/herdr-radar
 Ghostty / kitty 的配置存在的话写入码位映射。
 
 > [!IMPORTANT]
-> 插件由 Herdr 服务端在启动时拉起，装完侧边栏还没变化，就重启一次 Herdr
-> （`herdr server stop` 后再 `herdr`），或者手动起一次：
+> 插件由 Herdr 服务端在启动时拉起，装完侧边栏还没变化，就手动起一次：
 > `herdr plugin action invoke hhdebb.herdr-radar.state-start`。
-> 新开的终端窗口才会加载字体。
+> 重启 Herdr（`herdr server stop` 后再 `herdr`）也行，但它会结束所有面板里正在跑的进程。
+> 新开的终端窗口才会加载字体，有的终端要整个重启。
 
 > [!NOTE]
 > 需要 Herdr 0.8.0+ 和 Node 18+。Windows 11 和 macOS 实测过，Linux 尚未实测。
@@ -77,6 +77,16 @@ key = "prefix+comma"
 type = "plugin_action"
 command = "hhdebb.herdr-radar.settings"        # 设置弹窗
 ```
+
+不走 GitHub、从检出目录装：
+
+```sh
+git clone https://github.com/hhdebb/herdr-radar.git
+herdr plugin link ./herdr-radar
+herdr plugin action invoke hhdebb.herdr-radar.state-start
+```
+
+`plugin link` 不跑构建步骤，同样的初始化由守护进程首次启动时完成，第三行就是为此。
 
 ## 侧边栏长什么样
 
@@ -106,24 +116,25 @@ billing
 | `order` | `active` | `active` 分组按活跃度 / `recent` 扁平 / `off` Herdr 的顺序 |
 | `variant` | `auto` | logo 来源：`font` 图标字体 / `text` 普通 Unicode / `none`。`auto` 认插件自己装的字体 |
 | `done_hold` | `until_seen` | 勾保持到聚焦面板，或改成秒数 |
-| `blocked_hold` | `on` | 问号保持到 agent 重新干活 |
+| `blocked_hold` | `true` | 问号保持到 agent 重新干活 |
 | `idle_grace_seconds` | `2.5` | idle 持续这么久才算一轮结束 |
 | `activity_fresh_minutes` | `15` | 最后一轮之后多久内算 fresh |
 | `activity_stale_minutes` | `120` | 多久没动算 stale，整行变暗 |
 | `group_indent` | `2` | 成员缩进几格，`0` 平铺 |
-| `group_gap` | `on` | 组之间留空行 |
-| `show_tab` | `off` | 标题前显示 tab 号 |
+| `group_gap` | `true` | 组之间留空行 |
+| `show_tab` | `false` | 标题前显示 tab 号 |
 | `worktree_mark` | `U+F418` | worktree 表头的标记，需要 Nerd Font；置空不画 |
-| `follow_appearance` | `on` | 跟随桌面明暗切换 Herdr 主题 |
+| `follow_appearance` | `true` | 跟随桌面明暗切换 Herdr 主题 |
 | `colors.active_row_bg_light` | `#b9cdf2` | 浅色主题的选中行底色；置空用主题自己的 |
 | `colors.active_row_bg_dark` | `#414868` | 深色主题的选中行底色 |
 
 前两项是实时状态，其余存在 `$(herdr plugin config-dir hhdebb.herdr-radar)/config.toml`，
-手改也行，改完 `state-stop` 再 `state-start`。
+手改也行，改完 `state-stop` 再 `state-start`。这个文件在弹窗第一次保存时才出现，之前要手改就按上表的键
+自己建一个（布尔值不加引号：`group_gap = false`）。
 
 ## 常见问题
 
-先看 `herdr plugin log list`，插件的每条命令在那里都有输出和报错。
+先看 `herdr plugin log list --plugin hhdebb.herdr-radar --limit 20`，插件的每条命令在那里都有输出和报错。
 
 <details>
 <summary><b>装了字体，logo 还是方块或问号</b></summary>
@@ -146,7 +157,7 @@ billing
 <summary><b>装完侧边栏一点变化都没有</b></summary>
 
 守护进程没起来，`herdr plugin action invoke hhdebb.herdr-radar.state-start`。还不行就看
-`herdr plugin log list` 里这条的输出。最常见的原因：Herdr 看到的 PATH 上没有 Node 18+，
+插件日志里这条的输出。最常见的原因：Herdr 看到的 PATH 上没有 Node 18+，
 或者 `config.toml` 里没有 `[ui]` 表让托管块落脚。
 </details>
 
@@ -162,7 +173,7 @@ billing
 
 Herdr 的状态区超宽时整块丢掉而不是截断，差一列都不行。调小环境变量 `HERDR_RADAR_TABBAR_MAX`
 （默认 48）或收窄侧边栏。另一种可能是 Herdr 的 client 和 server 版本不一致（`herdr status` 里
-`restart_needed: yes`），`herdr server stop` 后重开。
+`restart_needed: yes`），`herdr server stop` 后重开（会结束所有面板里的进程）。
 </details>
 
 <details>
@@ -188,13 +199,17 @@ Windows 上手动 `herdr plugin pane open` 时要带 `--cwd <插件目录>`，�
 
 ## 卸载
 
-先摘托管块再卸插件，顺序反了它们会留在配置里指向没人发布的 token：
+按这个顺序：`unconfigure` 会停掉守护进程、清掉它写过的所有 token、摘掉托管块，而且插件还在
+才调得到它：
 
 ```sh
 herdr plugin action invoke hhdebb.herdr-radar.unconfigure
 herdr plugin action invoke hhdebb.herdr-radar.uninstall-font
 herdr plugin uninstall hhdebb.herdr-radar
 ```
+
+留下的只有状态目录和里面的配置备份：`~/.local/state/herdr/plugins/hhdebb.herdr-radar`
+（Windows 是 `%LOCALAPPDATA%\herdr\plugins\...`），想一点不剩就手动删掉。
 
 ## 工作方式
 

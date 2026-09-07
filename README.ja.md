@@ -58,8 +58,9 @@ herdr plugin install hhdebb/herdr-radar
 
 > [!IMPORTANT]
 > プラグインは Herdr サーバーが起動時に立ち上げます。インストール後にサイドバーが変わらなければ、
-> Herdr を再起動する（`herdr server stop` の後に `herdr`）か、デーモンを一度手で起動してください：
+> デーモンを一度手で起動してください：
 > `herdr plugin action invoke hhdebb.herdr-radar.state-start`。
+> Herdr の再起動（`herdr server stop` の後に `herdr`）でも構いませんが、全ペインのプロセスが終了します。
 > フォントは新しいターミナルウィンドウから読み込まれます。ターミナルによっては完全な再起動が必要です。
 
 > [!NOTE]
@@ -81,6 +82,17 @@ key = "prefix+comma"
 type = "plugin_action"
 command = "hhdebb.herdr-radar.settings"        # 設定ポップアップ
 ```
+
+GitHub ではなくチェックアウトから入れる場合：
+
+```sh
+git clone https://github.com/hhdebb/herdr-radar.git
+herdr plugin link ./herdr-radar
+herdr plugin action invoke hhdebb.herdr-radar.state-start
+```
+
+`plugin link` はビルド手順を実行しません。同じセットアップはデーモンの初回起動が行うので、
+3 行目が必要です。
 
 ## サイドバーの見え方
 
@@ -111,24 +123,27 @@ billing
 | `order` | `active` | `active` グループ化してアクティビティ順 / `recent` フラット / `off` Herdr の順序 |
 | `variant` | `auto` | ロゴをアイコンフォント（`font`）、通常の Unicode（`text`）、なし（`none`）。`auto` はプラグインが入れたフォントを認識 |
 | `done_hold` | `until_seen` | チェックをフォーカスまで保持、または秒数 |
-| `blocked_hold` | `on` | エージェントが再び動くまでクエスチョンマークを保持 |
+| `blocked_hold` | `true` | エージェントが再び動くまでクエスチョンマークを保持 |
 | `idle_grace_seconds` | `2.5` | ターン終了とみなすまで idle が続く必要のある時間 |
 | `activity_fresh_minutes` | `15` | 最後のターンからこの時間は fresh |
 | `activity_stale_minutes` | `120` | この時間ターンがなければ行が薄くなる |
 | `group_indent` | `2` | 見出しの下のメンバーの字下げ幅。`0` でフラット |
-| `group_gap` | `on` | グループ間の空行 |
-| `show_tab` | `off` | タイトルの前にタブ番号 |
+| `group_gap` | `true` | グループ間の空行 |
+| `show_tab` | `false` | タイトルの前にタブ番号 |
 | `worktree_mark` | `U+F418` | worktree 見出しのマーク（Nerd Font が必要）。空で非表示 |
-| `follow_appearance` | `on` | デスクトップのライト／ダークに合わせて Herdr のテーマを切り替え |
+| `follow_appearance` | `true` | デスクトップのライト／ダークに合わせて Herdr のテーマを切り替え |
 | `colors.active_row_bg_light` | `#b9cdf2` | ライトテーマの選択行の背景。空ならテーマ自身の値 |
 | `colors.active_row_bg_dark` | `#414868` | ダークテーマの選択行の背景 |
 
 最初の 2 つはライブの状態です。残りは `$(herdr plugin config-dir hhdebb.herdr-radar)/config.toml`
-にあり、手で編集してもかまいません。編集後は `state-stop`、続けて `state-start`。
+にあり、手で編集してもかまいません。編集後は `state-stop`、続けて `state-start`。このファイルは
+ポップアップが最初に保存したときに作られます。それより前に手で編集するなら、上の表のキーで自分で
+作ってください（真偽値は引用符なし：`group_gap = false`）。
 
 ## トラブルシューティング
 
-まず `herdr plugin log list`。プラグインの各コマンドの出力とエラーはそこにあります。
+まず `herdr plugin log list --plugin hhdebb.herdr-radar --limit 20`。プラグインの各コマンドの出力と
+エラーはそこにあります。
 
 <details>
 <summary><b>フォントを入れたのにロゴが四角やクエスチョンマークのまま</b></summary>
@@ -152,7 +167,7 @@ billing
 <summary><b>インストールしても何も変わらない</b></summary>
 
 デーモンが動いていません：`herdr plugin action invoke hhdebb.herdr-radar.state-start`。それでも
-だめなら `herdr plugin log list` でそのコマンドの出力を読んでください。よくある原因は、Herdr から
+だめならプラグインのログでそのコマンドの出力を読んでください。よくある原因は、Herdr から
 見える PATH に Node 18 以上がないこと、`config.toml` に管理ブロックを置く `[ui]` テーブルがないことです。
 </details>
 
@@ -170,7 +185,7 @@ billing
 Herdr は幅を 1 列でも超えるとステータス領域を切り詰めずに丸ごと消します。環境変数
 `HERDR_RADAR_TABBAR_MAX`（既定 48）を下げるか、サイドバーを狭くしてください。あるいは Herdr の
 client と server のバージョンが違います（`herdr status` に `restart_needed: yes`）：
-`herdr server stop` して開き直してください。
+`herdr server stop` して開き直してください（全ペインのプロセスが終了します）。
 </details>
 
 <details>
@@ -198,14 +213,18 @@ Windows で `herdr plugin pane open` を手で実行するときは `--cwd <プ�
 
 ## アンインストール
 
-プラグインより先に管理ブロックを外してください。順番を逆にすると、誰も発行しなくなった
-トークンを指すブロックが設定に残ります。
+この順番で。`unconfigure` はデーモンを止め、書き込んだトークンをすべて消し、管理ブロックを
+外します。プラグインが入っている間でないと呼び出せません。
 
 ```sh
 herdr plugin action invoke hhdebb.herdr-radar.unconfigure
 herdr plugin action invoke hhdebb.herdr-radar.uninstall-font
 herdr plugin uninstall hhdebb.herdr-radar
 ```
+
+残るのは設定のバックアップを含む状態ディレクトリ
+`~/.local/state/herdr/plugins/hhdebb.herdr-radar`（Windows は `%LOCALAPPDATA%\herdr\plugins\...`）
+だけです。何も残したくなければ手で削除してください。
 
 ## 仕組み
 

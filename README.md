@@ -59,9 +59,10 @@ needed), and writes the codepoint map into Ghostty / kitty configs if they exist
 
 > [!IMPORTANT]
 > Herdr starts plugins from its server at startup. If the sidebar has not changed after
-> installing, restart Herdr (`herdr server stop`, then `herdr`) or start the daemon once:
+> installing, start the daemon once:
 > `herdr plugin action invoke hhdebb.herdr-radar.state-start`.
-> New terminal windows pick up the font; some terminals need a full restart.
+> Restarting Herdr (`herdr server stop`, then `herdr`) works too, but it ends every process in
+> every pane. New terminal windows pick up the font; some terminals need a full restart.
 
 > [!NOTE]
 > Requires Herdr 0.8.0+ and Node 18+. Tested on Windows 11 and macOS; Linux not yet.
@@ -82,6 +83,17 @@ key = "prefix+comma"
 type = "plugin_action"
 command = "hhdebb.herdr-radar.settings"        # settings popup
 ```
+
+From a checkout instead of GitHub:
+
+```sh
+git clone https://github.com/hhdebb/herdr-radar.git
+herdr plugin link ./herdr-radar
+herdr plugin action invoke hhdebb.herdr-radar.state-start
+```
+
+`plugin link` runs no build step; the daemon does the same setup on its first start, which is
+what the third line is for.
 
 ## What the sidebar looks like
 
@@ -113,25 +125,27 @@ the config file and restarts the daemon.
 | `order` | `active` | `active` grouped by activity / `recent` flat / `off` Herdr's order |
 | `variant` | `auto` | logos from the icon font (`font`), plain Unicode (`text`), or `none`; `auto` recognises the font the plugin installed |
 | `done_hold` | `until_seen` | keep the tick until the pane is focused, or a number of seconds |
-| `blocked_hold` | `on` | keep the question mark until the agent works again |
+| `blocked_hold` | `true` | keep the question mark until the agent works again |
 | `idle_grace_seconds` | `2.5` | idle must persist this long to count as a finished turn |
 | `activity_fresh_minutes` | `15` | how long after the last turn a pane still reads as fresh |
 | `activity_stale_minutes` | `120` | how long without a turn before the row dims |
 | `group_indent` | `2` | member indent under a header; `0` for a flat list |
-| `group_gap` | `on` | a blank row between groups |
-| `show_tab` | `off` | tab number in front of the title |
+| `group_gap` | `true` | a blank row between groups |
+| `show_tab` | `false` | tab number in front of the title |
 | `worktree_mark` | `U+F418` | the mark on a worktree header, needs a Nerd Font; empty for none |
-| `follow_appearance` | `on` | switch Herdr's theme with the desktop's light/dark |
+| `follow_appearance` | `true` | switch Herdr's theme with the desktop's light/dark |
 | `colors.active_row_bg_light` | `#b9cdf2` | selected-row fill for a light theme; empty keeps the theme's own |
 | `colors.active_row_bg_dark` | `#414868` | selected-row fill for a dark theme |
 
 The first two are live state; the rest live in
 `$(herdr plugin config-dir hhdebb.herdr-radar)/config.toml` and can be edited by hand —
-then `state-stop` and `state-start`.
+then `state-stop` and `state-start`. The file appears the first time the popup saves; before
+that, create it with the keys above (booleans unquoted: `group_gap = false`).
 
 ## Troubleshooting
 
-Start with `herdr plugin log list`: every plugin command leaves its output and errors there.
+Start with `herdr plugin log list --plugin hhdebb.herdr-radar --limit 20`: every plugin command
+leaves its output and errors there.
 
 <details>
 <summary><b>Font installed, logos still show as boxes or question marks</b></summary>
@@ -155,7 +169,7 @@ JetBrains Mono with the icons patched in.
 <summary><b>Nothing changed after installing</b></summary>
 
 The daemon is not running: `herdr plugin action invoke hhdebb.herdr-radar.state-start`. If it
-still does not, read that command's output in `herdr plugin log list`. The usual causes: no
+still does not, read that command's output in the plugin log. The usual causes: no
 Node 18+ on the PATH Herdr sees, or no `[ui]` table in `config.toml` for the managed block to
 attach to.
 </details>
@@ -201,14 +215,18 @@ idle. `herdr agent explain <pane> --verbose` shows which rules matched.
 
 ## Uninstall
 
-Remove the managed blocks before the plugin, or they stay behind pointing at tokens nobody
-publishes:
+In this order — `unconfigure` stops the daemon, clears every token it wrote and removes the
+managed blocks, and it needs the plugin still installed to be invoked at all:
 
 ```sh
 herdr plugin action invoke hhdebb.herdr-radar.unconfigure
 herdr plugin action invoke hhdebb.herdr-radar.uninstall-font
 herdr plugin uninstall hhdebb.herdr-radar
 ```
+
+What stays is the state directory with its config backups,
+`~/.local/state/herdr/plugins/hhdebb.herdr-radar` (`%LOCALAPPDATA%\herdr\plugins\...` on
+Windows); delete it by hand if you want nothing left.
 
 ## How it works
 
