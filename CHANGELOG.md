@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.1
+
+- `unconfigure` now stops the daemon and clears every token before removing the blocks;
+  `plugin uninstall` used to leave a detached daemon repainting a sidebar nobody rendered.
+  `state-stop --purge` does the same clear on its own.
+- Ghostty: the codepoint map is also written to `config.ghostty`, the file Ghostty reads
+  alongside `config` on macOS.
+- README: install from a checkout, boolean settings shown as `true`/`false`, the config
+  file only exists after the first save, plugin log filtered by plugin, `herdr server stop`
+  ends every pane.
+
 ## 1.0.0
 
 First public release.
