@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; width: 1920px; height: 1080px; background: #050505; overflow: hidden; }
+  body {
+    font-family: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: #f2f0ea;
+    position: relative;
+  }
+  /* soft warm light falling from the top-right, and a faint paper grain */
+  .glow {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(900px 620px at 1450px 380px, rgba(214, 178, 110, 0.16), transparent 70%),
+      radial-gradient(700px 500px at 300px 900px, rgba(255, 255, 255, 0.05), transparent 70%);
+  }
+  .grain {
+    position: absolute; inset: 0; opacity: 0.045; mix-blend-mode: screen;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.8'/></svg>");
+  }
+  .copy { position: absolute; left: 132px; top: 330px; width: 900px; }
+  .name { font-size: 118px; font-weight: 750; letter-spacing: -0.035em; line-height: 1; margin: 0; color: #f6f4ee; }
+  .name .dash { color: #d6b26e; }
+  .tag { font-size: 38px; font-weight: 400; color: #bfbbb1; margin: 30px 0 0; letter-spacing: -0.01em; line-height: 1.25; }
+  .labels { margin-top: 44px; display: flex; gap: 30px; white-space: nowrap; font-size: 19px; letter-spacing: 0.08em; text-transform: uppercase; color: #7e7a72; }
+  .labels span::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 12px; vertical-align: 2px; background: #6a665e; }
+  .labels .working::before { background: #d97757; }
+  .labels .waiting::before { background: #c04a4a; }
+  .labels .done::before { background: #4c9a5a; }
+
+  /* the two screenshots: portrait shots cropped to the sidebar and the start of the main pane */
+  .shot {
+    position: absolute; overflow: hidden; border-radius: 18px;
+    box-shadow: 0 40px 90px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.08), 0 0 0 1px rgba(214,178,110,0.10) inset;
+    background: #111;
+  }
+  .shot img { display: block; }
+  /* crop: 1100 x 1250 source pixels, scaled */
+  .light { width: 616px; height: 700px; left: 985px; top: 240px; transform: rotate(-7deg); opacity: 0.92; }
+  .light img { width: 1057px; margin: -462px 0 0 -16px; }
+  .dark  { width: 660px; height: 750px; left: 1230px; top: 210px; transform: rotate(4deg); }
+  .dark img { width: 1132px; margin: -497px 0 0 -18px; }
+  .shot::after { content: ""; position: absolute; inset: 0; border-radius: 18px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06); pointer-events: none; }
+  .vignette { position: absolute; inset: 0; background: radial-gradient(1600px 1000px at 960px 540px, transparent 55%, rgba(0,0,0,0.55) 100%); pointer-events: none; }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="grain"></div>
+
+  <div class="shot light"><img src="file:///C:/Users/root/Downloads/Snipaste_2026-09-08_01-16-40.png"></div>
+  <div class="shot dark"><img src="file:///C:/Users/root/Downloads/Snipaste_2026-09-08_01-16-45.png"></div>
+
+  <div class="copy">
+    <h1 class="name">herdr<span class="dash">-</span>radar</h1>
+    <p class="tag">See every agent at a glance.<br>Who is working, who is waiting on you, who went quiet.</p>
+    <div class="labels"><span class="working">working</span><span class="waiting">waiting on you</span><span class="done">done</span><span>parked</span></div>
+  </div>
+  <div class="vignette"></div>
+</body>
+</html>

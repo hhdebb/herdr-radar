@@ -1,0 +1,143 @@
+id = "hhdebb.herdr-radar"
+name = "Herdr Radar"
+version = "1.0.0"
+min_herdr_version = "0.8.0"
+description = "Readable Herdr sidebar: which agent is working, waiting on you, or abandoned — with groups, worktree trees and activity order."
+platforms = ["linux", "macos", "windows"]
+
+# Node, not Python. Upstream is Python and needs >= 3.11 for tomllib, which is
+# a real barrier: macOS ships 3.9 as `python3` and on Windows `python3` is a
+# Microsoft Store stub that produces no output at all. Pinning an absolute
+# interpreter per platform worked but forced every command to be declared
+# twice — and Herdr rejects a duplicate action id even across platforms.
+#
+# The Windows-specific patches this fork carried disappear with the runtime:
+# hiding the console is `windowsHide`, detaching the animator is
+# `detached + unref`, and testing whether a pid is alive is `process.kill(pid, 0)`,
+# which works on Windows in Node (Python's os.kill raises WinError 87 there).
+# UTF-8 decoding of Herdr's JSON is the default rather than the ANSI codepage.
+
+# Install / remove the managed blocks in Herdr's config.toml without knowing
+# where the plugin lives — a GitHub install never shows the user its directory.
+[[actions]]
+id = "configure"
+title = "Configure: install the sidebar, tab-bar and theme blocks"
+description = "Write (or repair) the three managed blocks in Herdr's config.toml and reload."
+command = ["node", "bin/configure.js", "--apply", "--reload"]
+
+[[actions]]
+id = "install-font"
+title = "Font: install for this user and map codepoints in the terminal"
+description = "Copy the icon font into your user font directory (no admin needed) and write the codepoint map into ghostty/kitty configs that exist; other terminals get instructions in the log."
+command = ["node", "bin/install-font.js"]
+
+[[actions]]
+id = "uninstall-font"
+title = "Font: remove"
+description = "Remove the installed icon font and the terminal codepoint map this plugin wrote."
+command = ["node", "bin/install-font.js", "--uninstall"]
+
+[[actions]]
+id = "unconfigure"
+title = "Configure: remove the managed blocks"
+description = "Remove the three managed blocks from Herdr's config.toml and reload. Do this before uninstalling."
+command = ["node", "bin/configure.js", "--uninstall", "--reload"]
+
+[[actions]]
+id = "refresh"
+title = "Agent icons: refresh"
+description = "Reapply icon variants to all current panes."
+command = ["node", "bin/agent-icons.js"]
+
+[[actions]]
+id = "state-start"
+title = "Agent state: start animator"
+description = "Start the lifecycle-state glyph animator."
+command = ["node", "bin/agent-state.js"]
+
+[[actions]]
+id = "state-stop"
+title = "Agent state: stop animator"
+description = "Stop the lifecycle-state glyph animator and clear its tokens."
+command = ["node", "bin/agent-state.js", "--stop"]
+
+# Herdr disables the panel's own grouped/priority toggle while an agent-view
+# override is active, so this action is both the way into the recent-first
+# order and the way back out. Bindable to a key via a plugin_action custom
+# command.
+[[actions]]
+id = "view-toggle"
+title = "Agents: cycle order (active / recent / off)"
+description = "Cycle the Agents panel: grouped by activity, flat by activity, or the panel's own order."
+command = ["node", "bin/agent-view.js"]
+
+[[actions]]
+id = "view-flip"
+title = "Agents: active <-> recent"
+description = "Flip between grouped-by-activity and flat-by-activity without leaving the plugin's order."
+command = ["node", "bin/agent-view.js", "--flip"]
+
+# The other two-state door, cut across the cycle rather than along it: in and
+# out of the plugin's Agents panel ENTIRELY — both the sort override and the
+# `[ui.sidebar.*]` rows that paint the logos and state colours. The two live in
+# different places (socket API vs config.toml), so this one alone rewrites
+# Herdr's config and reloads the server; the actions above are pure socket
+# calls. Coming back in always lands on `active` — no memory of which view you
+# left from, deliberately: view-flip is one key away, and a toggle that returns
+# somewhere different each time is worse than one you can predict. Pair the two
+# on separate keys and neither ever has to pass through a state you did not
+# want — this key picks ours-vs-Herdr's, that key picks which of ours.
+[[actions]]
+id = "view-native"
+title = "Agents: Herdr's panel <-> ours"
+description = "Toggle the whole Agents panel — order and row colours — between Herdr's own and the plugin's."
+command = ["node", "bin/agent-view.js", "--native"]
+
+# Runs when Herdr installs the plugin from GitHub (shown in the install
+# preview): writes the managed blocks, installs the icon font, starts the
+# daemon. A checkout linked with `plugin link` gets the same setup from the
+# daemon launcher on its first start instead.
+[[build]]
+command = ["node", "bin/setup.js"]
+
+# The settings popup: every plugin config key, edited in place and applied by
+# restarting the daemon. A popup rather than a split so it can sit over the
+# current pane and go away — nothing here is worth a permanent pane.
+[[panes]]
+id = "settings"
+title = "herdr-radar settings"
+placement = "popup"
+command = ["node", "bin/settings.js"]
+width = 84
+height = 26
+
+[[actions]]
+id = "settings"
+title = "Settings"
+description = "Open the settings popup."
+command = ["node", "bin/settings.js", "--open"]
+
+[[startup]]
+command = ["node", "bin/agent-icons.js"]
+
+[[startup]]
+command = ["node", "bin/agent-state.js"]
+
+# The recent-first view dies with the server; restore it if it was chosen.
+[[startup]]
+command = ["node", "bin/agent-view.js", "--reapply"]
+
+# The one remaining agent-state hook is a WATCHDOG, not the wake mechanism.
+# The daemon wakes itself through its event subscription; this hook exists so
+# a crashed daemon comes back the next time an agent is detected, without
+# paying a node spawn on every status flip and focus change like the old
+# short-lived animator did. (agent-icons' per-detection hook is gone too —
+# the daemon publishes $harness_logo from its own snapshot.)
+[[events]]
+on = "pane.agent_detected"
+command = ["node", "bin/agent-state.js"]
+
+# Appearance follow-up now lives on a timer inside the resident daemon
+# (agent-state.js requires bin/theme-sync and calls sync() once a minute).
+# It used to ride on pane.focused / agent_status_changed event hooks — a node
+# spawn per event — because nothing else survived long enough to own a timer.

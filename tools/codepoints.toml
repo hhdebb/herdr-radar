@@ -1,0 +1,83 @@
+family = "Herdr Agent Icons Max"
+version = "1.5.0"
+
+[glyphs]
+claude = "E1A0"
+codex = "E1A1"
+opencode = "E1A2"
+omp = "E1A3"
+cline = "E1A4"
+mastracode = "E1A5"
+kimi = "E1A6"
+kilo = "E1A7"
+maki = "E1A8"
+pi = "E1A9"
+hermes = "E1AA"
+cursor = "E1AB"
+copilot = "E1AC"
+deepseek = "E1AD"
+gemini = "E1AE"
+gpt = "E1AF"
+qwen = "E1B0"
+grok = "E1B1"
+
+# Lifecycle states. E1B2-E1BF stays free for future vendor marks.
+state_done = "E1C0"
+state_blocked = "E1C1"
+state_idle = "E1C2"
+state_unknown = "E1C3"
+state_idle_fresh = "E1C4"
+state_idle_stale = "E1C5"
+
+
+# Fraction of the fit box a mark may occupy. Vendor logos fill it; the
+# state marks sit beside a logo on the same line and would compete with it
+# at full size.
+[fit]
+# Fraction of the fit box a mark may occupy.
+#
+# The entries below are GENERATED, by tools in the scratchpad, and they
+# exist because a shared number does not equalise size. The builder scales
+# each glyph until its OWN bounding box hits the cell, so a wide-short mark
+# maxes out on width while a tall one maxes out on height; multiplying both
+# by the same fit leaves them as unequal as they started. Solving for one
+# box instead — one longest edge for every mark (920) —
+# gives every vendor comparable visual weight. Re-run the generator after
+# adding or replacing a mark.
+default = 1.20
+
+# The lifecycle marks are hand-tuned and deliberately not in that scheme:
+# they sit beside a title rather than standing in for a vendor.
+#
+# The question mark is tall and narrow (306x467 in the source box), so the
+# per-glyph bounding-box fit lets it fill the cell's full height -- 36% taller
+# than the ring. Scale it so its height matches the ring's rendered 672 units.
+state_blocked = 0.88
+
+# The idle ring marks all three freshness tiers and shares its row with the
+# title. At full size it competed with the text; two thirds reads as a
+# marker beside it.
+state_idle = 0.68
+
+# The small dot is small on purpose — least ink for the least active
+# session. Unused since the tiers moved to the ring, kept for one edit back.
+state_idle_stale = 0.30
+
+claude = 1.64
+codex = 1.64
+opencode = 1.31
+omp = 1.64
+cline = 1.57
+mastracode = 1.64
+kimi = 1.64
+kilo = 1.64
+maki = 1.64
+pi = 1.64
+hermes = 1.57
+cursor = 1.44
+copilot = 1.64
+deepseek = 1.64
+gemini = 1.64
+gpt = 1.64
+qwen = 1.64
+grok = 1.64
