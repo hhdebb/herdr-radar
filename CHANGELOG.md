@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.2
+
+- Refuse to install when `[theme.custom]` or a `[ui.sidebar.*]` table already exists outside
+  the managed blocks; appending a second declaration broke Herdr's whole config.
+- Appearance following records the original `[theme] name` / `auto_switch` on first write and
+  `unconfigure` restores them.
+
 ## 1.0.1
 
 - `unconfigure` now stops the daemon and clears every token before removing the blocks;
