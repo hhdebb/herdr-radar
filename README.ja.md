@@ -168,7 +168,10 @@ billing
 
 デーモンが動いていません：`herdr plugin action invoke hhdebb.herdr-radar.state-start`。それでも
 だめならプラグインのログでそのコマンドの出力を読んでください。よくある原因は、Herdr から
-見える PATH に Node 18 以上がないこと、`config.toml` に管理ブロックを置く `[ui]` テーブルがないことです。
+見える PATH に Node 18 以上がないこと、`config.toml` に管理ブロックを置く `[ui]` テーブルがないこと、
+あるいは `[theme.custom]` / `[ui.sidebar.*]` テーブルを手で書いていることです。同じテーブルを 2 回
+宣言するとファイル全体が壊れるので、プラグインは書き込みを拒否します。自分のものをどけるか、
+そのままにして Herdr 本来のパネルを使ってください。
 </details>
 
 <details>

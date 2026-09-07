@@ -158,7 +158,9 @@ billing
 
 守护进程没起来，`herdr plugin action invoke hhdebb.herdr-radar.state-start`。还不行就看
 插件日志里这条的输出。最常见的原因：Herdr 看到的 PATH 上没有 Node 18+，
-或者 `config.toml` 里没有 `[ui]` 表让托管块落脚。
+`config.toml` 里没有 `[ui]` 表让托管块落脚，或者你自己手写过 `[theme.custom]` / `[ui.sidebar.*]`
+表：插件会拒绝写入而不是让同一个表出现两次（那会让整个配置文件失效）。把你的挪开，或者留着它、
+用 Herdr 原生面板。
 </details>
 
 <details>

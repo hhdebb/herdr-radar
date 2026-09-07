@@ -170,8 +170,10 @@ JetBrains Mono with the icons patched in.
 
 The daemon is not running: `herdr plugin action invoke hhdebb.herdr-radar.state-start`. If it
 still does not, read that command's output in the plugin log. The usual causes: no
-Node 18+ on the PATH Herdr sees, or no `[ui]` table in `config.toml` for the managed block to
-attach to.
+Node 18+ on the PATH Herdr sees, no `[ui]` table in `config.toml` for the managed block to
+attach to, or a `[theme.custom]` / `[ui.sidebar.*]` table you wrote by hand — the plugin
+refuses rather than declare a table twice, which would break the whole file. Move yours out of
+the way, or keep it and use Herdr's own panel.
 </details>
 
 <details>
