@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.4
+
+- Drop a workspace name from the start of a title when the group header above already
+  shows it; `trim_group_prefix` turns it off.
+
 ## 1.0.3
 
 - The daemon applies the chosen order (default `active`) when it starts, not only from the
