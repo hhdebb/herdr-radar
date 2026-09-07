@@ -19,6 +19,7 @@ require('../lib/node-version');
 // plugin's — and key bindings, see --keys.
 
 const managed = require('../lib/managed-config');
+const { stopAnimator } = require('../lib/stop');
 const { pluginId, reloadConfig } = require('../lib/herdr');
 const { stateRoot } = require('../lib/paths');
 const { NAME } = require('../lib/identity');
@@ -51,7 +52,7 @@ function keybindings() {
   ].join('\n');
 }
 
-function main() {
+async function main() {
   const mode = process.argv.find((argument) => argument.startsWith('--')) ?? '--check';
   if (mode === '--rows-on' || mode === '--rows-off') {
     const result = managed.setSidebarRows(mode === '--rows-on');
@@ -60,6 +61,13 @@ function main() {
     process.exit(result.ok ? 0 : 1);
   }
   if (mode === '--apply' || mode === '--uninstall') {
+    // Uninstall stops the daemon before the blocks go: a detached daemon
+    // outlives `plugin uninstall`, and Herdr has no uninstall hook to stop it
+    // from, so this action is the one place the whole teardown can happen.
+    // Every token goes too — with the blocks gone nothing renders them.
+    if (mode === '--uninstall') {
+      console.log((await stopAnimator({ purge: true })) ? 'daemon: stopped, tokens cleared' : 'daemon: still running, tokens cleared');
+    }
     const result = mode === '--apply' ? managed.apply() : managed.remove();
     console.log(result.message);
     // `--reload` is what the manifest actions pass: a user who installed from

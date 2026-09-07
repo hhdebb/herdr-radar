@@ -40,7 +40,7 @@ command = ["node", "bin/install-font.js", "--uninstall"]
 [[actions]]
 id = "unconfigure"
 title = "Configure: remove the managed blocks"
-description = "Remove the three managed blocks from Herdr's config.toml and reload. Do this before uninstalling."
+description = "Stop the daemon, clear every token it wrote, remove the three managed blocks from Herdr's config.toml and reload. Do this before uninstalling."
 command = ["node", "bin/configure.js", "--uninstall", "--reload"]
 
 [[actions]]
@@ -58,7 +58,7 @@ command = ["node", "bin/agent-state.js"]
 [[actions]]
 id = "state-stop"
 title = "Agent state: stop animator"
-description = "Stop the lifecycle-state glyph animator and clear its tokens."
+description = "Stop the lifecycle-state glyph animator and clear its marks. Titles and sort keys stay so the list stays readable; unconfigure clears everything."
 command = ["node", "bin/agent-state.js", "--stop"]
 
 # Herdr disables the panel's own grouped/priority toggle while an agent-view

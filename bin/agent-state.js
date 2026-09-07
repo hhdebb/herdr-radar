@@ -12,14 +12,18 @@ require('../lib/node-version');
 //                                      is what Herdr's startup hook and the
 //                                      watchdog event call)
 //   node bin/agent-state.js --animate  BE the daemon
-//   node bin/agent-state.js --stop     stop it and clear its tokens
+//   node bin/agent-state.js --stop     stop it and clear its marks (titles
+//                                      and sort keys stay, see state.clearAll)
+//   node bin/agent-state.js --stop --purge
+//                                      stop it and clear every token it ever
+//                                      wrote — the uninstall path
 
 const fs = require('node:fs');
 
 const herdr = require('../lib/herdr');
 const state = require('../lib/state');
-const control = require('../lib/control');
 const daemon = require('../lib/daemon');
+const { stopAnimator } = require('../lib/stop');
 const { detachedNode } = require('../lib/spawn');
 
 function spawnAnimator() {
@@ -43,45 +47,7 @@ function spawnAnimator() {
   detachedNode(__filename, ['--animate'], { stdio });
 }
 
-// Synchronous sleep; the stop path is a rare manual action and has to block.
-function sleep(ms) {
-  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
-}
-
-async function stopAnimator() {
-  // Fast path: ask the daemon directly. It clears everything itself and exits
-  // once the reply is on the wire — no marker files, no polling.
-  const reply = await control.request({ cmd: 'stop' }, 10000);
-  if (reply?.ok) {
-    const deadline = Date.now() + 3000;
-    while (state.animatorRunning() && Date.now() < deadline) sleep(50);
-    return;
-  }
-
-  // Legacy path, for a daemon too old or too wedged to answer its pipe: drop
-  // a stop marker (the daemon watches its state directory, so it is seen
-  // within milliseconds), wait for it to exit, then clear the tokens. Clearing
-  // while it still ticks loses the race — it repaints a working pane every
-  // frame.
-  try {
-    fs.writeFileSync(state.STOP(), '', 'utf8');
-  } catch {
-    // Nothing to signal.
-  }
-  const deadline = Date.now() + 8000;
-  while (state.animatorRunning() && Date.now() < deadline) sleep(100);
-  if (!state.animatorRunning()) {
-    try {
-      fs.rmSync(state.LOCK(), { force: true }); // a stale pid file, if any
-      fs.rmSync(state.STOP(), { force: true });
-    } catch {
-      // Leftovers only delay the next start by one wake.
-    }
-  }
-  await state.clearAll(herdr.source());
-}
-
 const mode = process.argv.find((a) => a.startsWith('--'));
 if (mode === '--animate') daemon.start();
-else if (mode === '--stop') stopAnimator();
+else if (mode === '--stop') stopAnimator({ purge: process.argv.includes('--purge') });
 else spawnAnimator();
