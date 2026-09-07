@@ -130,6 +130,7 @@ billing
 | `group_indent` | `2` | 見出しの下のメンバーの字下げ幅。`0` でフラット |
 | `group_gap` | `true` | グループ間の空行 |
 | `show_tab` | `false` | タイトルの前にタブ番号 |
+| `trim_group_prefix` | `true` | 見出しと同じ名前でタイトルが始まるとき、その部分を落とす |
 | `worktree_mark` | `U+F418` | worktree 見出しのマーク（Nerd Font が必要）。空で非表示 |
 | `follow_appearance` | `true` | デスクトップのライト／ダークに合わせて Herdr のテーマを切り替え |
 | `colors.active_row_bg_light` | `#b9cdf2` | ライトテーマの選択行の背景。空ならテーマ自身の値 |

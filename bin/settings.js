@@ -117,6 +117,12 @@ const FIELDS = [
   { key: 'group_gap', kind: 'bool', fallback: true, help: 'A blank row between workspace groups.' },
   { key: 'show_tab', kind: 'bool', fallback: false, help: 'Show the tab number on the state line.' },
   {
+    key: 'trim_group_prefix',
+    kind: 'bool',
+    fallback: true,
+    help: 'Drop the workspace name from a title when the header above already shows it.',
+  },
+  {
     key: 'worktree_mark',
     kind: 'glyph',
     fallback: '\uf418',

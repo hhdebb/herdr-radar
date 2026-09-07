@@ -123,6 +123,7 @@ billing
 | `group_indent` | `2` | 成员缩进几格，`0` 平铺 |
 | `group_gap` | `true` | 组之间留空行 |
 | `show_tab` | `false` | 标题前显示 tab 号 |
+| `trim_group_prefix` | `true` | 标题开头与分组表头同名时去掉那一截 |
 | `worktree_mark` | `U+F418` | worktree 表头的标记，需要 Nerd Font；置空不画 |
 | `follow_appearance` | `true` | 跟随桌面明暗切换 Herdr 主题 |
 | `colors.active_row_bg_light` | `#b9cdf2` | 浅色主题的选中行底色；置空用主题自己的 |
