@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.2.1
 
 - Fix `agents_panel = herdr` reverting to the plugin a moment after it was
   saved. The daemon rewrites the managed blocks at startup when the sidebar
