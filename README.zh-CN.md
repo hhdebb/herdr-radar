@@ -59,7 +59,7 @@ Ghostty / kitty 的配置存在的话写入码位映射。
 > 新开的终端窗口才会加载字体，有的终端要整个重启。
 
 > [!NOTE]
-> 需要 Herdr 0.8.0+ 和 Node 18+。Windows 11 和 macOS 实测过，Linux 尚未实测。
+> 需要 Herdr 0.9.0+ 和 Node 18+。Windows 11 和 macOS 实测过，Linux 尚未实测。
 > 没有按码位映射的终端（Windows Terminal、iTerm）和 Windows 上标签栏不跟 `cd` 的问题，
 > 见「常见问题」。
 

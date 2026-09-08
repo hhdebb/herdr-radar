@@ -64,7 +64,7 @@ herdr plugin install hhdebb/herdr-radar
 > フォントは新しいターミナルウィンドウから読み込まれます。ターミナルによっては完全な再起動が必要です。
 
 > [!NOTE]
-> Herdr 0.8.0 以上、Node 18 以上が必要です。Windows 11 と macOS で確認済み、Linux は未確認です。
+> Herdr 0.9.0 以上、Node 18 以上が必要です。Windows 11 と macOS で確認済み、Linux は未確認です。
 > コードポイント割り当てのないターミナル（Windows Terminal、iTerm）と、Windows でタブバーが `cd` に
 > 追従しない件は「トラブルシューティング」を参照してください。
 

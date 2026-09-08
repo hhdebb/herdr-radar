@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.1.0
+
+Requires Herdr 0.9.0: the sidebar block now colours a logo by matching the
+vendor's glyph, which older versions reject along with the rest of the file.
+
+- Vendor colours come from per-value rules on one cell instead of a copy of the
+  whole row per vendor. The block is 60% smaller, and Gemini joins the three
+  vendors that had a colour of their own.
+- A working row's title is bold, and the spinner in front of it is six-dot
+  braille rather than eight — the two lower dots barely moved while the rest
+  of the frame turned.
+- Each frame sends only the tokens that changed, not all thirty-odd. A write
+  that alters what is rendered costs Herdr about 100ms to answer, so the old
+  full rewrite spent the frame budget queueing.
+- The daemon no longer subscribes to `pane.updated`, which was mostly the echo
+  of its own writes; agent status arrives on its own event now, and a slow
+  heartbeat catches title changes.
+- A daemon started by hand reads the plugin config again: without Herdr's
+  injected config directory it silently ran on defaults.
+- Refuse to write a sidebar row wider than Herdr's 16-token limit, which it
+  answers by rejecting the whole config file.
+
 ## 1.0.4
 
 - Drop a workspace name from the start of a title when the group header above already

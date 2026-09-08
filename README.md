@@ -65,7 +65,7 @@ needed), and writes the codepoint map into Ghostty / kitty configs if they exist
 > every pane. New terminal windows pick up the font; some terminals need a full restart.
 
 > [!NOTE]
-> Requires Herdr 0.8.0+ and Node 18+. Tested on Windows 11 and macOS; Linux not yet.
+> Requires Herdr 0.9.0+ and Node 18+. Tested on Windows 11 and macOS; Linux not yet.
 > Terminals without a codepoint map (Windows Terminal, iTerm) and the tab bar not following
 > `cd` on Windows are covered under *Troubleshooting*.
 
