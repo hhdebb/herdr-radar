@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Fix the vendor colours 1.1.0 lost on every row below a group header. The rule
+  matched the logo cell with `equals`, but an indented row's value carries a
+  zero-width space and its indent in front of the glyph, so only a header's own
+  row ever matched; it is `contains` now.
 - A working row spins a twelve-spoke throbber from the icon font instead of a
   braille frame. Only the spoke widths change between frames, not the outer
   radius, so the shape turns without breathing. The plain-Unicode variant keeps
