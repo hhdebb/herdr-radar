@@ -98,7 +98,7 @@ herdr plugin action invoke hhdebb.herdr-radar.state-start
 
 ```
 dashboard
-  ⣟ ✳ Implement OAuth scopes            ← working：スピナー、ロゴはベンダー色
+  ⣟ ✳ Implement OAuth scopes            ← working：アイコンフォントならスロバー、なければ点字
   ✓ ✳ Wire retry budget into dispatcher ← done：緑のチェック、見るまで保持
   └─  feature/mc-13200                  ← リポジトリの下の worktree
     ? Λ Which env file should I edit?   ← blocked：赤のクエスチョンマーク、質問中

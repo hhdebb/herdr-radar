@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- A working row spins a twelve-spoke throbber from the icon font instead of a
+  braille frame. Only the spoke widths change between frames, not the outer
+  radius, so the shape turns without breathing. The plain-Unicode variant keeps
+  the braille frames, and so does the merged JetBrains Mono build — it cannot be
+  rebuilt here, it needs the upstream font as input.
+
 ## 1.1.0
 
 Requires Herdr 0.9.0: the sidebar block now colours a logo by matching the

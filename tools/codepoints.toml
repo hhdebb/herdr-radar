@@ -1,5 +1,5 @@
 family = "Herdr Agent Icons Max"
-version = "1.5.0"
+version = "1.6.0"
 
 [glyphs]
 claude = "E1A0"
@@ -28,6 +28,22 @@ state_idle = "E1C2"
 state_unknown = "E1C3"
 state_idle_fresh = "E1C4"
 state_idle_stale = "E1C5"
+
+# The working spinner: a twelve-spoke throbber, one glyph per frame
+# (tools/make_throbber_svgs.py). Right after the lifecycle marks because it is
+# one of them in everything but name — it is what `working` shows.
+throb_0 = "E1C6"
+throb_1 = "E1C7"
+throb_2 = "E1C8"
+throb_3 = "E1C9"
+throb_4 = "E1CA"
+throb_5 = "E1CB"
+throb_6 = "E1CC"
+throb_7 = "E1CD"
+throb_8 = "E1CE"
+throb_9 = "E1CF"
+throb_10 = "E1D0"
+throb_11 = "E1D1"
 
 
 # Fraction of the fit box a mark may occupy. Vendor logos fill it; the
@@ -62,6 +78,21 @@ state_idle = 0.68
 # The small dot is small on purpose — least ink for the least active
 # session. Unused since the tiers moved to the ring, kept for one edit back.
 state_idle_stale = 0.30
+
+# The throbber stands where a braille frame used to, in front of a title, so it
+# is sized like the ring rather than like a vendor mark.
+throb_0 = 1.5
+throb_1 = 1.5
+throb_2 = 1.5
+throb_3 = 1.5
+throb_4 = 1.5
+throb_5 = 1.5
+throb_6 = 1.5
+throb_7 = 1.5
+throb_8 = 1.5
+throb_9 = 1.5
+throb_10 = 1.5
+throb_11 = 1.5
 
 claude = 1.64
 codex = 1.64
