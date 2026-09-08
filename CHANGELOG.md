@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- Fix `agents_panel = herdr` reverting to the plugin a moment after it was
+  saved. The daemon rewrites the managed blocks at startup when the sidebar
+  block was written for a different logo variant, but the variant tag lives
+  inside that block — and a panel handed back to Herdr has no block at all,
+  which read as a variant that disagreed. The check now runs only while the
+  block is there, because its absence is the whole record of that choice.
+  Present since 1.1.0.
+
 ## 1.2.0
 
 - The mark in front of a blocked row pulses instead of sitting still: the
