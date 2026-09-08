@@ -8,6 +8,11 @@
   ignore, and it was the only event mark with no motion at all. Borrowed from
   Codex, which alternates `[ ! ]` with `[ . ]` in its terminal title while it
   waits for an answer.
+- An agent's own blinking marker is dropped from the title — Codex writes
+  `[ ! ]` / `[ . ]` into it while waiting. The row pulses its own mark for that
+  state now, and two blinkers out of phase in one line is worse than either;
+  the words after the bracket are kept. It also stops a title rewrite every
+  second that said nothing new.
 - The other halves of a split screen hang off the pane they were split from,
   the way a worktree's sessions hang off their checkout: one corner each, a
   grey one so the structure does not read louder than the row it holds. Panes
