@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- The other halves of a split screen hang off the pane they were split from,
+  the way a worktree's sessions hang off their checkout: one corner each, a
+  grey one so the structure does not read louder than the row it holds. Panes
+  sharing a tab also rank as one unit, so nothing unrelated lands between two
+  halves of one screen.
 - Fix the vendor colours 1.1.0 lost on every row below a group header. The rule
   matched the logo cell with `equals`, but an indented row's value carries a
   zero-width space and its indent in front of the glyph, so only a header's own

@@ -42,7 +42,8 @@ sessions of one project sit under one header, and the busiest project sits on to
   stays until the agent works again, idle splits into three tiers by time since the last
   turn, and abandoned sessions dim as a whole row.
 - **The list has structure.** Workspaces get headers, git worktrees hang under their repository
-  as a tree, the busiest project sorts first, and the Spaces column takes the same colours.
+  as a tree, the halves of a split screen hang off the pane they came from, the busiest project
+  sorts first, and the Spaces column takes the same colours.
 - **The surroundings follow.** The tab bar shows the current directory, Herdr's theme switches
   with the desktop's light and dark, and one settings popup holds every option.
 
