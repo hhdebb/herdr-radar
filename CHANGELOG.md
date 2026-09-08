@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.2.0
 
 - The mark in front of a blocked row pulses instead of sitting still: the
   question mark and a quiet ring take turns in the same cell, about three
