@@ -95,7 +95,7 @@ dashboard
   ⣟ ✳ Implement OAuth scopes            ← working：装了图标字体是菊花，没装是盲文点阵
   ✓ ✳ Wire retry budget into dispatcher ← done：绿勾，保持到你看过
   └─  feature/mc-13200                  ← worktree 挂在它的仓库下面
-    ? Λ Which env file should I edit?   ← blocked：红问号，它在问你
+    ? Λ Which env file should I edit?   ← blocked：一闪一闪的红标记，它在问你
 billing
   ✳ Trace duplicate charges             ← idle：刚停下
   ✳ Migrate invoices table              ← idle 两小时以上：整行变暗

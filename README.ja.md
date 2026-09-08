@@ -102,7 +102,7 @@ dashboard
   ⣟ ✳ Implement OAuth scopes            ← working：アイコンフォントならスロバー、なければ点字
   ✓ ✳ Wire retry budget into dispatcher ← done：緑のチェック、見るまで保持
   └─  feature/mc-13200                  ← リポジトリの下の worktree
-    ? Λ Which env file should I edit?   ← blocked：赤のクエスチョンマーク、質問中
+    ? Λ Which env file should I edit?   ← blocked：脈打つ赤のマーク、質問中
 billing
   ✳ Trace duplicate charges             ← idle：止まったばかり
   ✳ Migrate invoices table              ← idle が 2 時間以上：行ごと薄くなる

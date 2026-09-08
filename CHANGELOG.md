@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- The mark in front of a blocked row pulses instead of sitting still: the
+  question mark and a quiet ring take turns in the same cell, about three
+  quarters of a second each. Blocked is the one state that costs something to
+  ignore, and it was the only event mark with no motion at all. Borrowed from
+  Codex, which alternates `[ ! ]` with `[ . ]` in its terminal title while it
+  waits for an answer.
 - The other halves of a split screen hang off the pane they were split from,
   the way a worktree's sessions hang off their checkout: one corner each, a
   grey one so the structure does not read louder than the row it holds. Panes

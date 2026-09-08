@@ -103,7 +103,7 @@ dashboard
   ⣟ ✳ Implement OAuth scopes            ← working: a throbber with the icon font, braille without
   ✓ ✳ Wire retry budget into dispatcher ← done: green tick, held until you look
   └─  feature/mc-13200                  ← a worktree under its repository
-    ? Λ Which env file should I edit?   ← blocked: red question mark, it is asking you
+    ? Λ Which env file should I edit?   ← blocked: a pulsing red mark, it is asking you
 billing
   ✳ Trace duplicate charges             ← idle: just stopped
   ✳ Migrate invoices table              ← idle for two hours: the whole row dims
