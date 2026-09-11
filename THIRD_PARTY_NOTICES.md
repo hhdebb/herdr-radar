@@ -25,9 +25,12 @@ Font marks in `assets/svg/` are sourced from the following projects. Marks ident
 | gemini | Google Gemini (proprietary) |
 | gpt | OpenAI (proprietary) |
 | qwen | Alibaba Qwen (proprietary) |
+| grok | xAI Grok (proprietary) |
+| agy | Google Antigravity (proprietary) |
+| kiro | AWS Kiro (proprietary) |
 
 Marks for `cursor`, `opencode`, `hermes`, `copilot`, `deepseek`, `gemini`,
-`gpt`, and `qwen` were taken from [lobehub/lobe-icons](https://github.com/lobehub/lobe-icons)
+`gpt`, `qwen`, `agy`, and `kiro` were taken from [lobehub/lobe-icons](https://github.com/lobehub/lobe-icons)
 (MIT) and re-normalized to bare `<path>` geometry. The MIT license covers that
 project's packaging, not the trademarks of the depicted brands.
 
@@ -36,7 +39,7 @@ See each project's repository for license details and modifications.
 ## JetBrains Mono
 
 `dist/JetBrainsMonoHerdr-Regular.ttf` is JetBrains Mono v2.304 (© 2020 The JetBrains
-Mono Project Authors, SIL Open Font License 1.1) with this project's 24 icon glyphs
+Mono Project Authors, SIL Open Font License 1.1) with this project's 38 icon glyphs
 patched in and the family renamed to "JetBrains Mono Herdr", as the OFL requires for a
 modified build. The OFL text ships alongside it as `dist/OFL.txt`; the font's own
 copyright and license name records are kept intact.
