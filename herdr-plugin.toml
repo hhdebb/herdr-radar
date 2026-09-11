@@ -1,6 +1,6 @@
 id = "hhdebb.herdr-radar"
 name = "Herdr Radar"
-version = "1.2.1"
+version = "1.3.0"
 min_herdr_version = "0.9.0"
 description = "Readable Herdr sidebar: which agent is working, waiting on you, or abandoned — with groups, worktree trees and activity order."
 platforms = ["linux", "macos", "windows"]

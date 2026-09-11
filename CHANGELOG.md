@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.3.0
+
+- Antigravity and Kiro get their marks. Both SVGs were already in `tools/svg/`
+  with nothing pointing at them; they are now glyphs `U+E1B2` and `U+E1B3` in
+  the icon font, so the hand-mapped codepoint range in the README moves with
+  them. Antigravity is keyed `agy` throughout, which is the id Herdr reports
+  for it.
+- A row whose terminal title says nothing but where the pane is now shows the
+  agent's name instead. Codex never sets a title, and Antigravity and Kiro
+  leave the shell's `<path>: <job>` form standing, so those rows read as the
+  working directory the group header above them already named. Claude Code and
+  grok write their own names and are untouched, as is any title an agent
+  actually wrote.
+- `dist/JetBrainsMonoHerdr-Regular.ttf` is rebuilt. It had been left at 24 icon
+  glyphs while the icon font grew to 38, so a terminal that takes one font file
+  and no fallback was missing the lifecycle marks and the throbber as well as
+  the two new vendors. Same JetBrains Mono 2.304 base as before.
+- `grok` has an attribution row in `THIRD_PARTY_NOTICES.md`, which it never had.
+
 ## 1.2.1
 
 - Fix `agents_panel = herdr` reverting to the plugin a moment after it was

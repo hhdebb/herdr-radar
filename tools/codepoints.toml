@@ -1,5 +1,5 @@
 family = "Herdr Agent Icons Max"
-version = "1.6.0"
+version = "1.7.0"
 
 [glyphs]
 claude = "E1A0"
@@ -20,8 +20,12 @@ gemini = "E1AE"
 gpt = "E1AF"
 qwen = "E1B0"
 grok = "E1B1"
+# Antigravity is keyed by the id Herdr reports for it, `agy`, the same as
+# every other mark here — lib/logos.js turns that back into a readable name.
+agy = "E1B2"
+kiro = "E1B3"
 
-# Lifecycle states. E1B2-E1BF stays free for future vendor marks.
+# Lifecycle states. E1B4-E1BF stays free for future vendor marks.
 state_done = "E1C0"
 state_blocked = "E1C1"
 state_idle = "E1C2"
@@ -112,3 +116,5 @@ gemini = 1.64
 gpt = 1.64
 qwen = 1.64
 grok = 1.64
+agy = 1.64
+kiro = 1.35
