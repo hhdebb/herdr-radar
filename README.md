@@ -191,12 +191,17 @@ the config file and restarts the daemon.
 | `activity_stale_minutes` | `120` | how long without a turn before the row dims |
 | `group_indent` | `2` | member indent under a header; `0` for a flat list |
 | `group_gap` | `true` | a blank row between groups |
+| `reorder_workspaces` | `false` | make Herdr's workspace indices follow Radar's activity order |
 | `show_tab` | `false` | tab number in front of the title |
 | `trim_group_prefix` | `true` | drop the workspace name from a title when the header above already shows it |
 | `worktree_mark` | `U+F418` | the mark on a worktree header, needs a Nerd Font; empty for none |
 | `follow_appearance` | `true` | switch Herdr's theme with the desktop's light/dark |
 | `colors.active_row_bg_light` | `#b9cdf2` | selected-row fill for a light theme; empty keeps the theme's own |
 | `colors.active_row_bg_dark` | `#414868` | selected-row fill for a dark theme |
+
+Set `reorder_workspaces = true` to make Herdr's actual workspace order follow Radar's
+most-active-first order. This also changes which workspace `prefix+shift+1..9` selects;
+worktree families stay together. It is off by default because it changes the global Spaces order.
 
 The first two are live state; the rest live in
 `$(herdr plugin config-dir hhdebb.herdr-radar)/config.toml` and can be edited by hand —

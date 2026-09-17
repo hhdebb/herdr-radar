@@ -72,6 +72,12 @@ const FIELDS = [
     help: "Agents panel order: active (grouped, busiest first, stale last), recent (flat, by activity) or off (Herdr's own order). Applies while agents_panel is plugin.",
   },
   {
+    key: 'reorder_workspaces',
+    kind: 'bool',
+    fallback: false,
+    help: 'Make Herdr workspace indices follow Radar activity order, so prefix+shift+1..9 follows the panel.',
+  },
+  {
     key: 'variant',
     kind: 'enum',
     options: ['auto', 'font', 'text', 'none'],
