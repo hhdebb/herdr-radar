@@ -1,2 +1,3 @@
 # Build-time only. The runtime plugin uses stdlib only.
 fonttools>=4.40
+defusedxml>=0.7.1

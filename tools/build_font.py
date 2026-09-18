@@ -13,7 +13,7 @@ import argparse
 import sys
 import tomllib
 from pathlib import Path
-from xml.etree import ElementTree
+from defusedxml import ElementTree
 
 from fontTools.fontBuilder import FontBuilder
 from fontTools.pens.boundsPen import BoundsPen
