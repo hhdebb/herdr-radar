@@ -21,7 +21,7 @@ require('../lib/node-version');
 const managed = require('../lib/managed-config');
 const { stopAnimator } = require('../lib/stop');
 const { pluginId, reloadConfig } = require('../lib/herdr');
-const { stateRoot } = require('../lib/paths');
+const { stateRoot, runtimeDir } = require('../lib/paths');
 const { NAME } = require('../lib/identity');
 
 // Key bindings are the user's own config, not a managed block, so this only
@@ -94,6 +94,7 @@ async function main() {
   console.log(`theme   ${has(managed.THEME_START).padEnd(16)} [theme.custom]`);
   console.log(`sidebar ${has(managed.SIDEBAR_START).padEnd(16)} [ui.sidebar.*]`);
   console.log(`state   ${''.padEnd(16)} ${stateRoot}`);
+  console.log(`runtime ${''.padEnd(16)} ${runtimeDir()}`);
 }
 
 main();

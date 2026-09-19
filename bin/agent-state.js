@@ -5,8 +5,9 @@ require('../lib/node-version');
 
 // Lifecycle-state glyphs for the sidebar: a braille spinner while an agent
 // works, a green check when it finishes, a mark for blocked / idle / unknown.
-// The work is done by a resident daemon (lib/daemon.js); this is its command
-// line.
+// The work is done by a resident daemon (lib/daemon.js) — one per Herdr
+// socket (lib/paths.js runtimeDir), so every session's startup hook ensures
+// its own; this is its command line.
 //
 //   node bin/agent-state.js            make sure the daemon is running (this
 //                                      is what Herdr's startup hook and the
