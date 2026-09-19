@@ -53,6 +53,20 @@ for (const terminal of require('../lib/font').TERMINALS) {
   }
 }
 
+// Nor may it quote the family name: terminals read the name literally, so the quotes become part of it,
+// nothing matches, and the codepoints fall through to whatever else claims the range (in the PUA, a CJK font).
+const family = require('../lib/font').FONT_FAMILY;
+const quotesFamily = new RegExp(`["']${family.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["']`);
+for (const terminal of require('../lib/font').TERMINALS) {
+  const line = terminal.lines.find((text) => quotesFamily.test(text));
+  if (line) {
+    problems.push(
+      `${terminal.name} block: quotes the font family (${line.trim()}); ` +
+        'the quotes become part of the name the terminal looks for',
+    );
+  }
+}
+
 // Every colour the sidebar writes has to stay readable on the panel behind it.
 //
 // Herdr's themes all set `sidebar_bg: Color::Reset`, so the panel is whatever
