@@ -40,6 +40,7 @@ jobs:
       # workspace order settles instead of moving again on its own wake. Each
       # one is there because the thing it checks went wrong once.
       - run: npm run check
+      - run: npm test
       - run: npx prettier --check .
 
   font:
