@@ -146,6 +146,23 @@ const cases = [
     "cell('$space_idle_fresh', state.idle),",
     'spaces: cell renamed to a longer name containing the published one',
   ],
+  // Dropping the builtin cells hides every remote machine's workspaces — the
+  // plugin's `$`-tokens stay empty for anything its daemon cannot see.
+  [
+    'lib/managed-config.js',
+    "    '\"state_icon\"',\n    cell('workspace', state.none),",
+    '',
+    'spaces: Spaces rows without the builtin cells hide remote machines',
+  ],
+
+  // The same hole in the Agents panel: a remote machine's agent carries no
+  // plugin tokens, so its row renders empty without the builtin.
+  [
+    'lib/managed-config.js',
+    "        cell('machine', state.subtle, true),",
+    '',
+    'agents: agent rows without the builtin machine cell hide remote agents',
+  ],
 
   // THIRD_PARTY_NOTICES.md — the roster has to name every vendor. All three
   // shapes below were real: three marks went uncredited for five releases, and

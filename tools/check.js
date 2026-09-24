@@ -307,9 +307,25 @@ for (const display of state.SPACE_PRIORITY) {
 for (const variant of ['light', 'dark']) {
   const block = managed.sidebarBlock(variant);
   for (const token of state.SPACE_TOKENS) {
+    if (token === 'space_label') continue;
     if (!block.includes(`token = "$${token}"`)) {
       problems.push(`sidebar block (${variant}): no cell for $${token}, so that mark never draws`);
     }
+  }
+  // The builtin cells are what render a connected machine's workspaces; rows
+  // without them hide every remote machine from the Spaces column.
+  if (!block.includes('"state_icon"') || !block.includes('"workspace"')) {
+    problems.push(
+      `sidebar block (${variant}): Spaces rows lack the builtin "state_icon" / "workspace" cells — remote machines render empty`,
+    );
+  }
+  // The Agents panel has the same hole: an agent on a connected machine
+  // carries none of the plugin's tokens, and its row renders empty without
+  // the builtin `machine` cell, which draws only for remote agents.
+  if (!block.includes('"machine"')) {
+    problems.push(
+      `sidebar block (${variant}): agent rows lack the builtin "machine" cell — remote-machine agents render empty`,
+    );
   }
 }
 
