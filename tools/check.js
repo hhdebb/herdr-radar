@@ -466,6 +466,25 @@ if (unstable) {
   }
 }
 
+// row_label: each mode names the row as documented, and a tab-only row keeps
+// its title when the tab is unnamed or carries only Herdr's number.
+{
+  const { rowText } = require('../lib/state');
+  const cases = [
+    ['title', 'architect', { tabLabel: '', title: 'Architect::QA' }],
+    ['tab', 'architect', { tabLabel: '', title: 'architect' }],
+    ['both', 'architect', { tabLabel: 'architect', title: 'Architect::QA' }],
+    ['tab', '', { tabLabel: '', title: 'Architect::QA' }],
+    ['tab', '1', { tabLabel: '', title: 'Architect::QA' }],
+  ];
+  for (const [mode, tab, expected] of cases) {
+    const got = rowText(mode, tab, 'Architect::QA');
+    if (JSON.stringify(got) !== JSON.stringify(expected)) {
+      problems.push(`rowText(${mode}, "${tab}"): ${JSON.stringify(got)}, expected ${JSON.stringify(expected)}`);
+    }
+  }
+}
+
 // Liveness is asked of the endpoint, never of a pid file.
 //
 // `kill(pid, 0)` on the pid file only says that SOME process has the number,

@@ -236,12 +236,19 @@ the config file and restarts the daemon.
 | `group_gap` | `true` | a blank row between groups |
 | `split_corner` | `false` | hang the other panes of a split screen off the first with a `├─` corner |
 | `reorder_workspaces` | `false` | make Herdr's workspace indices follow Radar's activity order |
-| `show_tab` | `false` | tab number in front of the title |
+| `row_label` | `title` | what names an agent row: `title`, `tab` (the tab's name) or `both`; replaces `show_tab` |
 | `trim_group_prefix` | `true` | drop the workspace name from a title when the header above already shows it |
 | `worktree_mark` | `U+F418` | the mark on a worktree header, needs a Nerd Font; empty for none |
 | `follow_appearance` | `true` | switch Herdr's theme with the desktop's light/dark |
 | `colors.active_row_bg_light` | `#b9cdf2` | selected-row fill for a light theme; empty keeps the theme's own |
 | `colors.active_row_bg_dark` | `#414868` | selected-row fill for a dark theme |
+
+`row_label` picks what names an agent row. `title` is the session's own title,
+`tab` is the name of the tab it runs in, and `both` puts the tab name in front of
+the title — what `show_tab = true` did, which still reads as `both`. Pick `tab`
+when you name tabs after their sessions, so the name is not written twice. A
+tab-only row keeps its title when the tab was never named (Herdr labels such a
+tab with its number).
 
 Set `reorder_workspaces = true` to make Herdr's actual workspace order follow Radar's
 most-active-first order, so the Spaces list reads in the same order as the Agents panel and

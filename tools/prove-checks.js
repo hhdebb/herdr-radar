@@ -429,6 +429,26 @@ const cases = [
     "subtle: '#e0e0e0'",
     'palette: light subtle ink under the contrast floor (#5 was 3.06:1 at best)',
   ],
+
+  // lib/state.js — row_label names the row as documented.
+  [
+    'lib/state.js',
+    "if (rowLabel === 'tab' && named) return",
+    "if (rowLabel === 'tab') return",
+    'row_label: a tab-only row with an unnamed tab goes blank',
+  ],
+  [
+    'lib/state.js',
+    'const named = Boolean(tabName) && !/^\\d+$/.test(tabName);',
+    'const named = Boolean(tabName);',
+    'row_label: a numbered tab reads as its number instead of the title',
+  ],
+  [
+    'lib/state.js',
+    "return { tabLabel: rowLabel === 'both' ? tabName : '', title };",
+    'return { tabLabel: tabName, title };',
+    'row_label: the tab name comes back in title mode',
+  ],
 ];
 
 function withEdit(file, from, to, label, expectCaught = true, via = 'check') {
