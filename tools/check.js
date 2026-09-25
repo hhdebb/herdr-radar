@@ -448,6 +448,24 @@ if (unstable) {
   problems.push(`workspace order: desiredOrder is not idempotent — ${unstable}`);
 }
 
+// The worktree tree: a linked worktree hangs under the repo's main checkout,
+// and a second workspace on that same main checkout stays a peer.
+{
+  const { worktreeParents } = require('../lib/state');
+  const repo = (linked) => ({ repo_key: '/r/.git', repo_name: 'r', is_linked_worktree: linked });
+  const { parents } = worktreeParents([
+    { workspace_id: 'main1', worktree: repo(false) },
+    { workspace_id: 'main2', worktree: repo(false) },
+    { workspace_id: 'branch', worktree: repo(true) },
+  ]);
+  if (parents.get('branch') !== 'main1') {
+    problems.push(`worktreeParents: the linked worktree hangs under ${parents.get('branch')}, expected main1`);
+  }
+  if (parents.has('main2')) {
+    problems.push(`worktreeParents: a second main checkout hangs under ${parents.get('main2')}`);
+  }
+}
+
 // Liveness is asked of the endpoint, never of a pid file.
 //
 // `kill(pid, 0)` on the pid file only says that SOME process has the number,
