@@ -294,11 +294,23 @@ inert — it quoted the family name, so run the install action once more.
 <summary><b>Nothing changed after installing</b></summary>
 
 The daemon is not running: `herdr plugin action invoke hhdebb.herdr-radar.state-start`. If it
-still does not, read that command's output in the plugin log. The usual causes: no
+still does not, read that command's output in the plugin log
+(`herdr plugin log list --plugin hhdebb.herdr-radar --limit 20`). The usual causes: no
 Node 18+ on the PATH Herdr sees, no `[ui]` table in `config.toml` for the managed block to
-attach to, or a `[theme.custom]` / `[ui.sidebar.*]` table you wrote by hand — the plugin
-refuses rather than declare a table twice, which would break the whole file. Move yours out of
-the way, or keep it and use Herdr's own panel.
+attach to. A table the plugin writes that is already in your file is not one: see the next entry.
+</details>
+
+<details>
+<summary><b>A toast says a block was skipped, or <code>configure failed (exit 1)</code></b></summary>
+
+Your `config.toml` already has a `[theme.custom]` or `[ui.sidebar.*]` table — as a header, a
+dotted key (`custom.name = …` under `[theme]`) or an inline table. The plugin writes those
+tables itself, and TOML allows each table once, so the block that would collide stays out and
+the rest installs: without the sidebar block the Agents panel is Herdr's own; without the theme
+block your theme keeps its colours. To have the plugin's, delete your table and run the
+configure action again, then put any keys the block does not set back inside it. Older
+versions refused the whole install instead, with the reason only in the plugin log
+(`herdr plugin log list --plugin hhdebb.herdr-radar --limit 20`).
 </details>
 
 <details>

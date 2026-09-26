@@ -1,6 +1,6 @@
 {
   "name": "herdr-radar",
-  "version": "1.3.12",
+  "version": "1.3.17",
   "description": "Vendor logos, lifecycle-state glyphs, workspace grouping and a path tab-bar for the Herdr sidebar.",
   "license": "MIT",
   "private": true,
@@ -9,6 +9,7 @@
   },
   "scripts": {
     "check": "node tools/check.js",
+    "test": "node --test",
     "prove": "node tools/prove-checks.js",
     "format": "prettier --check .",
     "format:fix": "prettier --write ."

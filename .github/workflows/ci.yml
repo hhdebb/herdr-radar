@@ -40,6 +40,8 @@ jobs:
       # workspace order settles instead of moving again on its own wake. Each
       # one is there because the thing it checks went wrong once.
       - run: npm run check
+      # Behaviour, in test/: what has to be driven rather than read.
+      - run: npm test
       # And that the invariants can fail: each known-bad shape is put back and
       # must turn the check red. A check that can only pass is not a check.
       - run: npm run prove

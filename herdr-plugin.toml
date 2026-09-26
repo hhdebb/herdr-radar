@@ -1,6 +1,6 @@
 id = "hhdebb.herdr-radar"
 name = "Herdr Radar"
-version = "1.3.12"
+version = "1.3.17"
 min_herdr_version = "0.9.0"
 description = "Who's working, who's waiting on you — grouped by project, each agent in its vendor's logo and colour. Worktrees nest under their repo, rows order by activity, idle sessions fade. Light and dark."
 platforms = ["linux", "macos", "windows"]
@@ -94,9 +94,12 @@ description = "Toggle the whole Agents panel — order and row colours — betwe
 command = ["node", "bin/agent-view.js", "--native"]
 
 # Runs when Herdr installs the plugin from GitHub (shown in the install
-# preview): writes the managed blocks, installs the icon font, starts the
-# daemon. A checkout linked with `plugin link` gets the same setup from the
-# daemon launcher on its first start instead.
+# preview): writes the managed blocks and installs the icon font. It must
+# not start the daemon: the hook runs inside Herdr's temporary checkout,
+# which is renamed into place afterwards, and a process whose cwd is in
+# there blocks that rename on Windows (#23). The startup hooks below start
+# the daemon once the plugin is in place; a checkout linked with `plugin
+# link` gets the same setup from the daemon launcher on its first start.
 [[build]]
 command = ["node", "bin/setup.js"]
 

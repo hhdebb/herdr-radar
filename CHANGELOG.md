@@ -1,5 +1,115 @@
 # Changelog
 
+## 1.3.17 — 2026-09-27
+
+- **A second workspace on the same checkout is a peer, not a worktree.** Open
+  one repository in two workspaces — a feature and a quick review, both on
+  the main checkout — and the second one hung under the first with a branch
+  corner, next to the real worktrees, and inherited its place in the
+  activity order. Only a linked worktree hangs under its checkout now; a
+  second workspace on the same folder stays top-level beside the first.
+
+  Fixed in [#24](https://github.com/hhdebb/herdr-radar/pull/24) by
+  @sleistner.
+
+## 1.3.16 — 2026-09-27
+
+- **`herdr plugin install` works on Windows.** The install's build hook
+  runs inside Herdr's temporary checkout, which Herdr renames into place
+  once the hook is done — and the hook used to start the daemon from there.
+  A daemon started that way inherited the temporary checkout as its working
+  directory, and on Windows a directory that some process is sitting in
+  cannot be renamed, so every install on Windows ended with `os error 32`,
+  no plugin registered and empty `.tmp-install-*` folders left behind. The
+  build hook now only writes the managed blocks and installs the font; the
+  daemon starts from the startup hooks and the `state-start` action once the
+  plugin is where it will stay, which is also where it should have been
+  running from all along.
+
+  Reported in [#23](https://github.com/hhdebb/herdr-radar/issues/23) by
+  @tylyp, confirmed by @Pool1541.
+
+## 1.3.15 — 2026-09-25
+
+- **A table you already have keeps only its block out.** The plugin writes
+  `[theme.custom]` and the `[ui.sidebar.*]` tables itself, and TOML allows a
+  table once. A copy in your own config used to refuse the whole install —
+  and was only noticed in its header form: `custom.name = …` under `[theme]`,
+  or an inline table, slipped past, the block was appended on top, and Herdr
+  fell back to defaults for the entire file, taking every plugin with it.
+  Every form is seen now, and the block that would collide stays out while
+  the others install: with your own sidebar tables the Agents panel stays
+  Herdr's, with your own theme table your colours stay. The note says which
+  block and why. The check reads the file as TOML, not as lines; if a
+  config it misjudges ever turns up, the effect is a skipped block and a
+  note, never a broken file.
+
+- **The reason reaches the screen.** Herdr shows a failed action as
+  `failed (exit 1)` and files the output in the plugin log, which nobody
+  installing for the first time knows to read. A skipped block or a refusal
+  is now posted as a Herdr notification as well.
+
+- **A write is checked before it is kept.** Every change to `config.toml` is
+  followed by `herdr config check`; on a parse error the file is restored
+  from the backup and the parser's message becomes the note. A warning, such
+  as an unknown key, is not a parse error and does not block.
+
+  Reported in [#22](https://github.com/hhdebb/herdr-radar/issues/22) by
+  @skylarmb.
+
+## 1.3.14 — 2026-09-25
+
+- **A closed pane or workspace is cleared once, then forgotten.** Herdr answers
+  a write to a target that no longer exists with a not-found error, and the
+  daemon counted that as a failed write. Failed writes retry under a backoff
+  capped at a minute that never gives up, so every pane and workspace that
+  ever closed was cleared again once a minute for the daemon's whole life:
+  most of its calls ended in errors, the server log filled with them, and
+  each pending retry kept waking the loop. Not-found now counts as done, and
+  a closed pane also drops any backoff left from a repaint that failed before
+  it closed.
+
+  Reported in [#21](https://github.com/hhdebb/herdr-radar/issues/21) by
+  @IGUNUBLUE.
+
+- **Behaviour is tested with `node --test`.** `npm run check` keeps the
+  invariants; the behaviour cases moved into `test/` as a proper test suite,
+  run by `npm test` and in CI. Nothing changes at runtime.
+
+## 1.3.13 — 2026-09-25
+
+- **The daemon starts when a stale pid file names someone else.** Liveness was
+  `kill(pid, 0)` on `animator.pid`, which only asks whether *some* process has
+  that number. After a reboot — or just a Herdr restart — the number can belong
+  to a browser or an editor helper, and the startup hook then declined to start
+  a daemon: a blank sidebar, the action reporting success, nothing in any log.
+  The launcher now asks the daemon's control endpoint instead, which is named
+  per user and per plugin, so only this daemon can answer it.
+
+  Reported in [#19](https://github.com/hhdebb/herdr-radar/issues/19) by
+  @ashnegiii, confirmed by @IGUNUBLUE.
+
+- **A daemon that stops drawing is replaced.** A daemon can answer its endpoint
+  and still produce no frames, and it holds the endpoint, so nothing could take
+  its place. It now reports two ages: how long since its timer last fired, and
+  how long the frame in flight has been running. The launcher treats a timer
+  silent for thirty seconds, or a frame running for five minutes, as a stall
+  — kept apart so a frame merely waiting on a slow Herdr is never mistaken for
+  one — confirms it a few seconds later, ends it, and starts a fresh daemon,
+  noting why at the top of `animator.err`.
+
+  The cause behind the report: the frame floor compared the wall clock with
+  the time of the last frame, so a clock stepped *backwards* — NTP correcting a
+  fast RTC at boot, exactly when the daemon starts — made every wake look too
+  soon and froze the panel for as long as the step. Scheduling now runs on a
+  monotonic clock. Reported in
+  [#18](https://github.com/hhdebb/herdr-radar/issues/18) by @travisjeffery.
+
+- **A request no longer vanishes when the daemon hangs up mid-exit.** A client
+  that pinged a daemon in the instant it exited could be left waiting on a
+  reply that would never come, and exit silently. It now gets a clean "nobody
+  answered".
+
 ## 1.3.12 — 2026-09-21
 
 - **A group header follows its workspace's name.** The sidebar rewrites the

@@ -1,8 +1,18 @@
 #!/usr/bin/env node
 'use strict';
 
-// `npm run check`: the declaration files agree with lib/identity.js, and every
-// script parses. No test runner needed for a zero-dependency plugin.
+// `npm run check`: invariants — the things in this repository that have to
+// agree with each other and drifted apart once. The declaration files and
+// lib/identity.js, the vendor roster across six places, the ranges the READMEs
+// print and the ranges the installer maps, every script parsing. Each is read
+// straight off the source, synchronously, and needs nothing set up.
+//
+// Behaviour belongs in test/ instead (`npm test`, Node's built-in runner, so
+// still no dependency): anything that has to replace a module's function, run
+// async, or leave a process in a known state afterwards. It lived here for a
+// while and the file grew a promise chain to end on; that is the sign.
+//
+// Both are proved able to fail by tools/prove-checks.js.
 
 const { execFileSync } = require('node:child_process');
 const fs = require('node:fs');
@@ -438,77 +448,57 @@ if (unstable) {
   problems.push(`workspace order: desiredOrder is not idempotent — ${unstable}`);
 }
 
-// A failed label read must not erase the labels.
-//
-// `workspacesAsync` answers `[]` both for a timed-out call and for a session
-// with nothing open, so `labels()` cannot tell them apart and has to treat an
-// empty list as the failure it almost always is — the pane asking is itself in
-// a workspace. Committing it would blank every group header to a bare id, and
-// the next good read would redraw every one of them; with the header
-// fingerprint now sensitive to labels, a flapping socket rewrites the whole
-// panel on each swing.
-//
-// Run rather than read. The guard is one condition, which is exactly the shape
-// someone tidies away, so the real module is driven with its two reads
-// replaced — the only way to reach the failure branch at all. Everything else
-// in this file is synchronous; this is why the verdict is awaited.
-async function labelsSurviveAFailedRead() {
-  const herdr = require('../lib/herdr');
-  const realWorkspaces = herdr.workspacesAsync;
-  const realTabs = herdr.tabsAsync;
-  // Comfortably past any label TTL, so each call re-reads rather than
-  // short-circuiting on the cache.
-  const LATER = 60000;
-  try {
-    herdr.tabsAsync = async () => [{ tab_id: 't1', label: '1' }];
-    herdr.workspacesAsync = async () => [{ workspace_id: 'w1', label: 'radar' }];
-    const first = await state.labels(0);
-    if (first.workspaces.get('w1') !== 'radar') {
-      problems.push(
-        `labels: a good read should have labelled w1 'radar', got ${JSON.stringify(first.workspaces.get('w1'))}`,
-      );
-      return;
-    }
-    // The only way this read can express failure.
-    herdr.workspacesAsync = async () => [];
-    const after = await state.labels(LATER);
-    if (after.workspaces.get('w1') !== 'radar') {
-      problems.push(
-        'labels: an empty workspace list replaced the cached labels — every group header ' +
-          'falls back to its bare id until the next good read',
-      );
-    }
-    // A failure takes the TTL with it, or every frame asks again for as long
-    // as the failure lasts.
-    let reads = 0;
-    herdr.workspacesAsync = async () => {
-      reads += 1;
-      return [];
-    };
-    await state.labels(LATER + 1);
-    await state.labels(LATER + 2);
-    if (reads > 1) {
-      problems.push(`labels: ${reads} reads inside one TTL after a failure; a failed read should take the TTL too`);
-    }
-
-    // And the cache is not frozen: a good read afterwards still lands.
-    herdr.workspacesAsync = async () => [{ workspace_id: 'w1', label: 'renamed' }];
-    const recovered = await state.labels(2 * LATER);
-    if (recovered.workspaces.get('w1') !== 'renamed') {
-      problems.push('labels: a good read after a failed one did not refresh the cache');
-    }
-  } finally {
-    herdr.workspacesAsync = realWorkspaces;
-    herdr.tabsAsync = realTabs;
+// The worktree tree: a linked worktree hangs under the repo's main checkout,
+// and a second workspace on that same main checkout stays a peer.
+{
+  const { worktreeParents } = require('../lib/state');
+  const repo = (linked) => ({ repo_key: '/r/.git', repo_name: 'r', is_linked_worktree: linked });
+  const { parents } = worktreeParents([
+    { workspace_id: 'main1', worktree: repo(false) },
+    { workspace_id: 'main2', worktree: repo(false) },
+    { workspace_id: 'branch', worktree: repo(true) },
+  ]);
+  if (parents.get('branch') !== 'main1') {
+    problems.push(`worktreeParents: the linked worktree hangs under ${parents.get('branch')}, expected main1`);
+  }
+  if (parents.has('main2')) {
+    problems.push(`worktreeParents: a second main checkout hangs under ${parents.get('main2')}`);
   }
 }
 
-labelsSurviveAFailedRead()
-  .catch((error) => problems.push(`labels: the check itself threw — ${error.message}`))
-  .then(() => {
-    if (problems.length) {
-      console.error(problems.join('\n'));
-      process.exit(1);
+// Liveness is asked of the endpoint, never of a pid file.
+//
+// `kill(pid, 0)` on the pid file only says that SOME process has the number,
+// and after a restart that can be a browser (#19). The names are gone so a
+// caller cannot keep using them: an async replacement under the old name
+// would have returned a Promise, which is always truthy, and a launcher
+// asking `if (running()) return` would never start a daemon again.
+for (const dir of ['lib', 'bin']) {
+  for (const file of fs.readdirSync(path.join(root, dir))) {
+    if (!file.endsWith('.js')) continue;
+    const text = fs.readFileSync(path.join(root, dir, file), 'utf8');
+    for (const name of ['animatorRunning', 'pidAlive']) {
+      if (text.includes(name)) {
+        problems.push(`${dir}/${file}: still refers to ${name} — ask state.daemonStatus() instead`);
+      }
     }
-    console.log('ok');
-  });
+  }
+}
+
+// The build hook must not start a process. It runs inside Herdr's temporary
+// checkout, which Herdr renames into place afterwards; a daemon started from
+// there inherits that directory as its cwd, and on Windows a directory that
+// is some process's cwd cannot be renamed — every install failed with os
+// error 32 (#23). The daemon starts from the startup hooks instead.
+{
+  const text = fs.readFileSync(path.join(root, 'bin', 'setup.js'), 'utf8');
+  for (const name of ['detachedNode', 'child_process', 'spawn(']) {
+    if (text.includes(name)) problems.push(`bin/setup.js: starts a process (${name}) from the build hook (#23)`);
+  }
+}
+
+if (problems.length) {
+  console.error(problems.join('\n'));
+  process.exit(1);
+}
+console.log('ok');

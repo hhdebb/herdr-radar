@@ -390,9 +390,11 @@ class Editor {
     // is painting, then start a fresh one with the environment Herdr gave this
     // popup, config directory included.
     const reply = await control.request({ cmd: 'stop' }, 10000);
-    const deadline = Date.now() + 4000;
-    while (reply?.ok && state.animatorRunning() && Date.now() < deadline) {
-      await new Promise((resolve) => setTimeout(resolve, 100));
+    // A restart is what was asked for, so a daemon that answered but did not
+    // leave is ended: the launcher below would otherwise find it still
+    // answering, call it healthy, and keep the old settings running.
+    if (reply?.ok && !(await state.waitForExit(4000))) {
+      await state.terminate((await state.daemonStatus()).pid);
     }
     let note = '';
     if (viewChanged) {

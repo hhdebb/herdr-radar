@@ -26,7 +26,7 @@ const daemon = require('../lib/daemon');
 const { stopAnimator } = require('../lib/stop');
 const { detachedNode } = require('../lib/spawn');
 
-function spawnAnimator() {
+async function spawnAnimator() {
   // First start after an install: write the managed blocks, install the font.
   // Idempotent and stamped, so this is a cheap check on every later start.
   try {
@@ -34,13 +34,35 @@ function spawnAnimator() {
   } catch (error) {
     console.error(`setup: ${error.message}`);
   }
-  if (state.animatorRunning()) return;
+  // Asked of the endpoint, not the pid file (lib/state.js daemonStatus). A
+  // stalled daemon still holds the endpoint, so a fresh one could not bind
+  // beside it: it has to go first.
+  let status = await state.daemonStatus();
+  // A stall is confirmed before anything is ended. The ages are measured on a
+  // clock that keeps counting through sleep on some platforms, so a daemon
+  // asked in the first instant after a resume can look silent until its next
+  // heartbeat — two of those later, it has either spoken or it really is stuck.
+  if (status.state === 'stalled') {
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    status = await state.daemonStatus();
+  }
+  if (status.state === 'healthy') return;
+  let note = '';
+  if (status.state === 'stalled') {
+    const gone = await state.terminate(status.pid);
+    note =
+      `${new Date().toISOString()} replaced a stalled daemon: pid ${status.pid}, ` +
+      `${status.reason}${gone ? '' : ' (it did not exit)'}\n`;
+  }
   // stderr goes to a truncate-on-start log rather than the void: a detached
   // daemon that dies of an uncaught error otherwise just… stops, and the
-  // sidebar quietly freezes with nothing to debug from.
+  // sidebar quietly freezes with nothing to debug from. A replacement opens
+  // the log with why it was needed, since nothing else would record it.
   let stdio = 'ignore';
   try {
-    stdio = ['ignore', 'ignore', fs.openSync(daemon.ERR_FILE(), 'w')];
+    const fd = fs.openSync(daemon.ERR_FILE(), 'w');
+    if (note) fs.writeSync(fd, note);
+    stdio = ['ignore', 'ignore', fd];
   } catch {
     // No log is no reason not to run.
   }

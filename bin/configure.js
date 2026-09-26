@@ -20,7 +20,7 @@ require('../lib/node-version');
 
 const managed = require('../lib/managed-config');
 const { stopAnimator } = require('../lib/stop');
-const { pluginId, reloadConfig } = require('../lib/herdr');
+const { pluginId, reloadConfig, notify } = require('../lib/herdr');
 const { stateRoot } = require('../lib/paths');
 const { NAME } = require('../lib/identity');
 
@@ -74,6 +74,7 @@ async function main() {
     }
     const result = mode === '--apply' ? managed.apply() : managed.remove();
     console.log(result.message);
+    if (!result.ok || result.skipped?.length) notify(`${NAME}: configure`, result.message);
     // `--reload` is what the manifest actions pass: a user who installed from
     // GitHub never sees this directory, so the action has to finish the job.
     if (process.argv.includes('--reload')) {
