@@ -129,6 +129,12 @@ const FIELDS = [
     help: 'Spaces members sit in under a workspace header; 0 = flat list.',
   },
   { key: 'group_gap', kind: 'bool', fallback: true, help: 'A blank row between workspace groups.' },
+  {
+    key: 'split_corner',
+    kind: 'bool',
+    fallback: false,
+    help: 'Hang the other panes of a split screen off the first with a corner; off draws them as plain rows.',
+  },
   { key: 'show_tab', kind: 'bool', fallback: false, help: 'Show the tab number on the state line.' },
   {
     key: 'trim_group_prefix',

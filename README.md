@@ -42,8 +42,8 @@ sessions of one project sit under one header, and the busiest project sits on to
   stays until the agent works again, idle splits into three tiers by time since the last
   turn, and abandoned sessions dim as a whole row.
 - **The list has structure.** Workspaces get headers, git worktrees hang under their repository
-  as a tree, the halves of a split screen hang off the pane they came from, the busiest project
-  sorts first, and the Spaces column takes the same colours.
+  as a tree, the panes of a split screen stay together, the busiest project sorts first, and
+  the Spaces column takes the same colours.
 - **The surroundings follow.** The tab bar shows the current directory, Herdr's theme switches
   with the desktop's light and dark, and one settings popup holds every option.
 
@@ -234,6 +234,7 @@ the config file and restarts the daemon.
 | `activity_stale_minutes` | `120` | how long without a turn before the row dims |
 | `group_indent` | `2` | member indent under a header; `0` for a flat list |
 | `group_gap` | `true` | a blank row between groups |
+| `split_corner` | `false` | hang the other panes of a split screen off the first with a `├─` corner |
 | `reorder_workspaces` | `false` | make Herdr's workspace indices follow Radar's activity order |
 | `show_tab` | `false` | tab number in front of the title |
 | `trim_group_prefix` | `true` | drop the workspace name from a title when the header above already shows it |
