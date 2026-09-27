@@ -422,6 +422,16 @@ const cases = [
     'workspace order: inactive block flipped on every pass',
   ],
 
+  // lib/toml-blocks.js — a symlinked config stays linked through a save.
+  [
+    'lib/toml-blocks.js',
+    '  const target = realTarget(file);',
+    '  const target = file;',
+    'write: a save replaces a symlinked config with a plain file',
+    true,
+    'test/write-atomic.test.js',
+  ],
+
   // lib/palette.js — every sidebar ink clears the contrast floor (#5).
   [
     'lib/palette.js',
