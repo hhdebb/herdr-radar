@@ -341,7 +341,7 @@ function listRoom(hasStatus) {
 
 // The visible rows scroll with the cursor; the hidden counts mark the rest.
 function listWindow(cursor, room, top) {
-  const nextTop = scrollTop(FIELDS.length, cursor, room, top ?? 0);
+  const nextTop = scrollTop(FIELDS.length, cursor, room, top);
   const hiddenAbove = nextTop;
   const hiddenBelow = Math.max(0, FIELDS.length - nextTop - room);
   return {
@@ -360,6 +360,7 @@ class Editor {
     this.saved = currentValues(this.text);
     this.values = new Map(this.saved);
     this.cursor = 0;
+    this.top = 0;
     this.editing = null; // { buffer } while typing a text value
     this.status = '';
     this.quitArmed = false;

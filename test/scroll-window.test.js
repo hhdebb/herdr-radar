@@ -32,3 +32,7 @@ test('the window never runs past the end of the list', () => {
 test('wrapping from the last row to the first shows the top again', () => {
   assert.equal(scrollTop(20, 0, 8, 12), 0);
 });
+
+test('wrapping from the first row to the last shows the bottom', () => {
+  assert.equal(scrollTop(20, 19, 8, 0), 12);
+});
