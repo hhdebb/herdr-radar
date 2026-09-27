@@ -485,6 +485,36 @@ if (unstable) {
   }
 }
 
+// row_label is read from the settings file, and a file from before it existed
+// keeps its meaning: show_tab = true reads as both, anything else as title.
+{
+  const os = require('node:os');
+  const { spawnSync } = require('node:child_process');
+  const readRowLabel = (toml) => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'radar-config-'));
+    fs.writeFileSync(path.join(dir, 'config.toml'), toml);
+    const out = spawnSync(process.execPath, ['-e', "process.stdout.write(require('./lib/config').rowLabel)"], {
+      cwd: root,
+      env: { ...process.env, HERDR_PLUGIN_CONFIG_DIR: dir },
+      encoding: 'utf8',
+    });
+    fs.rmSync(dir, { recursive: true, force: true });
+    return out.stdout;
+  };
+  const cases = [
+    ['row_label = "tab"\nshow_tab = true\n', 'tab'],
+    ['show_tab = true\n', 'both'],
+    ['show_tab = false\n', 'title'],
+    ['row_label = "sideways"\n', 'title'],
+    ['', 'title'],
+  ];
+  for (const [toml, expected] of cases) {
+    const got = readRowLabel(toml);
+    if (got !== expected)
+      problems.push(`config: ${JSON.stringify(toml)} reads row_label as ${got}, expected ${expected}`);
+  }
+}
+
 // Liveness is asked of the endpoint, never of a pid file.
 //
 // `kill(pid, 0)` on the pid file only says that SOME process has the number,

@@ -430,24 +430,30 @@ const cases = [
     'palette: light subtle ink under the contrast floor (#5 was 3.06:1 at best)',
   ],
 
-  // lib/state.js — row_label names the row as documented.
+  // lib/state.js, lib/config.js — row_label names the row as documented.
   [
     'lib/state.js',
-    "if (rowLabel === 'tab' && named) return",
-    "if (rowLabel === 'tab') return",
+    '  if (!isNamedTab(tabName)) return titleRow(tabName, title);\n',
+    '',
     'row_label: a tab-only row with an unnamed tab goes blank',
   ],
   [
     'lib/state.js',
-    'const named = Boolean(tabName) && !/^\\d+$/.test(tabName);',
-    'const named = Boolean(tabName);',
+    'return Boolean(tabName) && !/^\\d+$/.test(tabName);',
+    'return Boolean(tabName);',
     'row_label: a numbered tab reads as its number instead of the title',
   ],
   [
     'lib/state.js',
-    "return { tabLabel: rowLabel === 'both' ? tabName : '', title };",
-    'return { tabLabel: tabName, title };',
+    "function titleRow(_tabName, title) {\n  return { tabLabel: '', title };",
+    'function titleRow(tabName, title) {\n  return { tabLabel: tabName, title };',
     'row_label: the tab name comes back in title mode',
+  ],
+  [
+    'lib/config.js',
+    "  if (raw.show_tab === true) return 'both';\n",
+    '',
+    'row_label: show_tab = true no longer reads as both',
   ],
 ];
 
