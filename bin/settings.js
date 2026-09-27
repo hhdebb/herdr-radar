@@ -310,6 +310,31 @@ const HELP_ROWS = 2;
 // hint, and the line the trailing newline leaves.
 const FIXED_ROWS = 1 + 1 + 2 + HELP_ROWS + 1 + 1 + 1;
 
+// The name column fits the longest name, so every value starts in one column.
+function nameColumnWidth() {
+  return Math.max(...FIELDS.map((field) => width(fieldName(field)))) + 2;
+}
+
+// The list gets whatever the popup's height leaves over.
+function listRoom(hasStatus) {
+  let rows = (process.stdout.rows || 26) - FIXED_ROWS;
+  if (hasStatus) rows -= 1;
+  return Math.max(3, rows);
+}
+
+// The visible rows scroll with the cursor; the hidden counts mark the rest.
+function listWindow(cursor, room, top) {
+  const nextTop = scrollTop(FIELDS.length, cursor, room, top ?? 0);
+  const hiddenAbove = nextTop;
+  const hiddenBelow = Math.max(0, FIELDS.length - nextTop - room);
+  return {
+    top: nextTop,
+    fields: FIELDS.slice(nextTop, nextTop + room),
+    hiddenAbove,
+    hiddenBelow,
+  };
+}
+
 /* ---------------------------------------------------------------- editor */
 
 class Editor {
@@ -431,24 +456,18 @@ class Editor {
 
   render() {
     const cols = Math.max(60, (process.stdout.columns || 84) - 2);
-    // The name column fits the longest name, so every value starts in one column.
-    const keyW = Math.max(...FIELDS.map((field) => width(fieldName(field)))) + 2;
-    // The list gets whatever the popup's height leaves over; a list taller
-    // than that scrolls with the cursor, and the blank rows around it say how
-    // much is out of view.
-    const room = Math.max(3, (process.stdout.rows || 26) - FIXED_ROWS - (this.status ? 1 : 0));
-    this.top = scrollTop(FIELDS.length, this.cursor, room, this.top ?? 0);
-    const hiddenAbove = this.top;
-    const hiddenBelow = Math.max(0, FIELDS.length - this.top - room);
+    const keyW = nameColumnWidth();
+    const window = listWindow(this.cursor, listRoom(this.status), this.top);
+    this.top = window.top;
     const out = [''];
     // Title left, plugin id right, the gap between them measured — not
     // guessed — so the pair fits the popup's width exactly and never wraps.
     const title = `${identity.NAME} settings`;
     const id = pluginId();
     out.push(` ${BOLD}${title}${R}${DIM}${' '.repeat(Math.max(1, cols - 1 - width(title) - width(id)))}${id}${R}`);
-    out.push(hiddenAbove ? `   ${DIM}↑ ${hiddenAbove} more${R}` : '');
-    FIELDS.slice(this.top, this.top + room).forEach((field, offset) => {
-      const selected = this.top + offset === this.cursor;
+    out.push(window.hiddenAbove ? `   ${DIM}↑ ${window.hiddenAbove} more${R}` : '');
+    window.fields.forEach((field, offset) => {
+      const selected = window.top + offset === this.cursor;
       const changed = this.values.get(field) !== this.saved.get(field);
       const name = fieldName(field);
       const value =
@@ -457,7 +476,7 @@ class Editor {
       const row = `${marker} ${pad(name, keyW)} ${value}`;
       out.push(selected ? ` ${ACCENT}▸${R} ${BOLD}${row}${R}` : `   ${row}`);
     });
-    out.push(hiddenBelow ? `   ${DIM}↓ ${hiddenBelow} more${R}` : '');
+    out.push(window.hiddenBelow ? `   ${DIM}↓ ${window.hiddenBelow} more${R}` : '');
     const help = wrap(this.field.help, cols - 1).slice(0, HELP_ROWS);
     while (help.length < HELP_ROWS) help.push('');
     for (const line of help) out.push(` ${DIM}${line}${R}`);
