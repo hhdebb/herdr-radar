@@ -422,6 +422,16 @@ const cases = [
     'workspace order: inactive block flipped on every pass',
   ],
 
+  // lib/scroll-window.js — the settings list keeps the cursor on screen.
+  [
+    'lib/scroll-window.js',
+    '  if (cursor >= next + room) next = cursor - room + 1;\n',
+    '',
+    'settings: the cursor walks off the bottom of a short popup',
+    true,
+    'test/scroll-window.test.js',
+  ],
+
   // lib/palette.js — every sidebar ink clears the contrast floor (#5).
   [
     'lib/palette.js',

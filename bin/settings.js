@@ -25,6 +25,7 @@ const state = require('../lib/state');
 const view = require('../lib/view');
 const managed = require('../lib/managed-config');
 const { detachedNode } = require('../lib/spawn');
+const { scrollTop } = require('../lib/scroll-window');
 const { pluginId, pluginConfigDir, ensureDir, stateRoot } = require('../lib/paths');
 const { editTopLevel, editTable, writeAtomic } = require('../lib/toml-blocks');
 const identity = require('../lib/identity');
@@ -249,6 +250,12 @@ const INV = '\x1b[7m';
 const ACCENT = '\x1b[38;5;110m';
 const WARN = '\x1b[38;5;179m';
 
+// A setting's name as the file spells it: `colors.active_row_bg_light` for a
+// key inside a table.
+function fieldName(field) {
+  return field.table ? `${field.table}.${field.key}` : field.key;
+}
+
 function codepoint(ch) {
   return ch ? `U+${ch.codePointAt(0).toString(16).toUpperCase().padStart(4, '0')}` : '';
 }
@@ -297,6 +304,11 @@ function wrap(text, cols) {
 // The help sits in a fixed number of rows so the hint line below it does not
 // jump as the cursor moves between short and long descriptions.
 const HELP_ROWS = 2;
+
+// Every row of the popup that is not a setting: the blank above the title, the
+// title, the two rows around the list, the help, the blank under it, the key
+// hint, and the line the trailing newline leaves.
+const FIXED_ROWS = 1 + 1 + 2 + HELP_ROWS + 1 + 1 + 1;
 
 /* ---------------------------------------------------------------- editor */
 
@@ -419,25 +431,33 @@ class Editor {
 
   render() {
     const cols = Math.max(60, (process.stdout.columns || 84) - 2);
-    const keyW = 24;
+    // The name column fits the longest name, so every value starts in one column.
+    const keyW = Math.max(...FIELDS.map((field) => width(fieldName(field)))) + 2;
+    // The list gets whatever the popup's height leaves over; a list taller
+    // than that scrolls with the cursor, and the blank rows around it say how
+    // much is out of view.
+    const room = Math.max(3, (process.stdout.rows || 26) - FIXED_ROWS - (this.status ? 1 : 0));
+    this.top = scrollTop(FIELDS.length, this.cursor, room, this.top ?? 0);
+    const hiddenAbove = this.top;
+    const hiddenBelow = Math.max(0, FIELDS.length - this.top - room);
     const out = [''];
     // Title left, plugin id right, the gap between them measured — not
     // guessed — so the pair fits the popup's width exactly and never wraps.
     const title = `${identity.NAME} settings`;
     const id = pluginId();
     out.push(` ${BOLD}${title}${R}${DIM}${' '.repeat(Math.max(1, cols - 1 - width(title) - width(id)))}${id}${R}`);
-    out.push('');
-    FIELDS.forEach((field, i) => {
-      const selected = i === this.cursor;
+    out.push(hiddenAbove ? `   ${DIM}↑ ${hiddenAbove} more${R}` : '');
+    FIELDS.slice(this.top, this.top + room).forEach((field, offset) => {
+      const selected = this.top + offset === this.cursor;
       const changed = this.values.get(field) !== this.saved.get(field);
-      const name = field.table ? `${field.table}.${field.key}` : field.key;
+      const name = fieldName(field);
       const value =
         selected && this.editing ? `${INV}${this.editing.buffer}${R}${DIM}▏${R}` : show(field, this.values.get(field));
       const marker = changed ? `${WARN}*${R}` : ' ';
       const row = `${marker} ${pad(name, keyW)} ${value}`;
       out.push(selected ? ` ${ACCENT}▸${R} ${BOLD}${row}${R}` : `   ${row}`);
     });
-    out.push('');
+    out.push(hiddenBelow ? `   ${DIM}↓ ${hiddenBelow} more${R}` : '');
     const help = wrap(this.field.help, cols - 1).slice(0, HELP_ROWS);
     while (help.length < HELP_ROWS) help.push('');
     for (const line of help) out.push(` ${DIM}${line}${R}`);
