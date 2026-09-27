@@ -305,21 +305,38 @@ function wrap(text, cols) {
 // jump as the cursor moves between short and long descriptions.
 const HELP_ROWS = 2;
 
-// Every row of the popup that is not a setting: the blank above the title, the
-// title, the two rows around the list, the help, the blank under it, the key
-// hint, and the line the trailing newline leaves.
-const FIXED_ROWS = 1 + 1 + 2 + HELP_ROWS + 1 + 1 + 1;
+const BLANK_ABOVE_TITLE_ROWS = 1;
+const TITLE_ROWS = 1;
+const LIST_BOUNDARY_ROWS = 2;
+const GAP_BELOW_HELP_ROWS = 1;
+const KEY_HINT_ROWS = 1;
+const TRAILING_NEWLINE_ROWS = 1;
+
+// Every row of the popup that is not a setting.
+const FIXED_ROWS =
+  BLANK_ABOVE_TITLE_ROWS +
+  TITLE_ROWS +
+  LIST_BOUNDARY_ROWS +
+  HELP_ROWS +
+  GAP_BELOW_HELP_ROWS +
+  KEY_HINT_ROWS +
+  TRAILING_NEWLINE_ROWS;
+
+const NAME_VALUE_GAP = 2;
+const DEFAULT_POPUP_ROWS = 26;
+const MINIMUM_LIST_ROWS = 3;
+const STATUS_ROWS = 1;
 
 // The name column fits the longest name, so every value starts in one column.
 function nameColumnWidth() {
-  return Math.max(...FIELDS.map((field) => width(fieldName(field)))) + 2;
+  return Math.max(...FIELDS.map((field) => width(fieldName(field)))) + NAME_VALUE_GAP;
 }
 
 // The list gets whatever the popup's height leaves over.
 function listRoom(hasStatus) {
-  let rows = (process.stdout.rows || 26) - FIXED_ROWS;
-  if (hasStatus) rows -= 1;
-  return Math.max(3, rows);
+  let rows = (process.stdout.rows || DEFAULT_POPUP_ROWS) - FIXED_ROWS;
+  if (hasStatus) rows -= STATUS_ROWS;
+  return Math.max(MINIMUM_LIST_ROWS, rows);
 }
 
 // The visible rows scroll with the cursor; the hidden counts mark the rest.
