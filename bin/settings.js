@@ -457,17 +457,17 @@ class Editor {
   render() {
     const cols = Math.max(60, (process.stdout.columns || 84) - 2);
     const keyW = nameColumnWidth();
-    const window = listWindow(this.cursor, listRoom(this.status), this.top);
-    this.top = window.top;
+    const visible = listWindow(this.cursor, listRoom(this.status), this.top);
+    this.top = visible.top;
     const out = [''];
     // Title left, plugin id right, the gap between them measured — not
     // guessed — so the pair fits the popup's width exactly and never wraps.
     const title = `${identity.NAME} settings`;
     const id = pluginId();
     out.push(` ${BOLD}${title}${R}${DIM}${' '.repeat(Math.max(1, cols - 1 - width(title) - width(id)))}${id}${R}`);
-    out.push(window.hiddenAbove ? `   ${DIM}↑ ${window.hiddenAbove} more${R}` : '');
-    window.fields.forEach((field, offset) => {
-      const selected = window.top + offset === this.cursor;
+    out.push(visible.hiddenAbove ? `   ${DIM}↑ ${visible.hiddenAbove} more${R}` : '');
+    visible.fields.forEach((field, offset) => {
+      const selected = visible.top + offset === this.cursor;
       const changed = this.values.get(field) !== this.saved.get(field);
       const name = fieldName(field);
       const value =
@@ -476,7 +476,7 @@ class Editor {
       const row = `${marker} ${pad(name, keyW)} ${value}`;
       out.push(selected ? ` ${ACCENT}▸${R} ${BOLD}${row}${R}` : `   ${row}`);
     });
-    out.push(window.hiddenBelow ? `   ${DIM}↓ ${window.hiddenBelow} more${R}` : '');
+    out.push(visible.hiddenBelow ? `   ${DIM}↓ ${visible.hiddenBelow} more${R}` : '');
     const help = wrap(this.field.help, cols - 1).slice(0, HELP_ROWS);
     while (help.length < HELP_ROWS) help.push('');
     for (const line of help) out.push(` ${DIM}${line}${R}`);
