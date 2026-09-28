@@ -25,7 +25,18 @@ test('a symlinked config stays a symlink, and its target gets the text', (t) => 
   const real = path.join(d, 'dotfiles-config.toml');
   const link = path.join(d, 'config.toml');
   fs.writeFileSync(real, 'old\n');
-  fs.symlinkSync(real, link);
+  // Windows lets only an administrator, or Developer Mode, create a symlink.
+  // A machine that cannot make one cannot have the bug either; the other
+  // two tests still cover the plain path there.
+  try {
+    fs.symlinkSync(real, link);
+  } catch (error) {
+    if (['EPERM', 'EACCES', 'ENOTSUP', 'EOPNOTSUPP'].includes(error.code)) {
+      t.skip(`this machine cannot create a symlink (${error.code})`);
+      return;
+    }
+    throw error;
+  }
   writeAtomic(link, 'new\n');
   assert.ok(fs.lstatSync(link).isSymbolicLink(), 'the link was replaced by a plain file');
   assert.equal(fs.readFileSync(real, 'utf8'), 'new\n');

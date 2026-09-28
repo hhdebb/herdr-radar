@@ -265,7 +265,8 @@ then `state-stop` and `state-start`. The file appears the first time the popup s
 that, create it with the keys above (booleans unquoted: `group_gap = false`).
 
 Both this file and Herdr's `config.toml` can be symlinks into a dotfiles repository: the
-popup and `configure` write through the link to its target, so the link stays in place.
+popup and `configure` write through the link to its target, so the link stays in place. (A
+link whose target is missing is written over, as a plain file.)
 
 ## Troubleshooting
 
