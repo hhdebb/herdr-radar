@@ -476,6 +476,10 @@ if (unstable) {
     ['both', 'architect', { tabLabel: 'architect', title: 'Architect::QA' }],
     ['tab', '', { tabLabel: '', title: 'Architect::QA' }],
     ['tab', '1', { tabLabel: '', title: 'Architect::QA' }],
+    // A name that is only whitespace, or a number wrapped in it, is no name.
+    ['tab', '   ', { tabLabel: '', title: 'Architect::QA' }],
+    ['tab', ' 12 ', { tabLabel: '', title: 'Architect::QA' }],
+    ['tab', ' qa ', { tabLabel: '', title: 'qa' }],
   ];
   for (const [mode, tab, expected] of cases) {
     const got = rowText(mode, tab, 'Architect::QA');

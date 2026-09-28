@@ -425,6 +425,14 @@ const cases = [
     'test/foreign-tables.test.js',
   ],
 
+  // lib/state.js — a tab name that is only whitespace is no name (review).
+  [
+    'lib/state.js',
+    "return pick((tabName ?? '').trim(), title);",
+    "return pick(tabName ?? '', title);",
+    'rows: a blank tab name replaces the title with nothing',
+  ],
+
   // lib/workspace-order.js — the order must settle or it loops over IPC.
   [
     'lib/workspace-order.js',
