@@ -231,7 +231,7 @@ exec claude "$@"
 | `idle_grace_seconds` | `2.5` | ターン終了とみなすまで idle が続く必要のある時間 |
 | `activity_fresh_minutes` | `15` | 最後のターンからこの時間は fresh |
 | `activity_stale_minutes` | `120` | この時間ターンがなければ行が薄くなる |
-| `group_indent` | `2` | 見出しの下のメンバーの字下げ幅。`0` でフラット |
+| `group_indent` | `2` | ツリーの階層ごとの空白数。`0` でも見出しと空行は残り、ツリー線は描かない。フラット表示は `prefix+a` |
 | `group_gap` | `true` | グループ間の空行 |
 | `split_corner` | `false` | 分割画面の残りのペインを `├─` で最初のペインの下にぶら下げる |
 | `row_label` | `title` | 行の名前：`title` セッションのタイトル、`tab` タブ名、`both` 両方（旧 `show_tab = true`） |

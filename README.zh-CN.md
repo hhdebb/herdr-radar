@@ -210,7 +210,7 @@ exec claude "$@"
 | `idle_grace_seconds` | `2.5` | idle 持续这么久才算一轮结束 |
 | `activity_fresh_minutes` | `15` | 最后一轮之后多久内算 fresh |
 | `activity_stale_minutes` | `120` | 多久没动算 stale，整行变暗 |
-| `group_indent` | `2` | 成员缩进几格，`0` 平铺 |
+| `group_indent` | `2` | 树的每层缩进空格数；`0` 时表头和空行保留，但不画树线；平铺列表用 `prefix+a` |
 | `group_gap` | `true` | 组之间留空行 |
 | `split_corner` | `false` | 分屏的其余面板用 `├─` 角标挂在第一个下面 |
 | `row_label` | `title` | 行显示什么：`title` 会话标题、`tab` tab 名、`both` 两者都显示（原 `show_tab = true`） |

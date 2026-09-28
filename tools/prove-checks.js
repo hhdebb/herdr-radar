@@ -478,6 +478,32 @@ const cases = [
     'test/sort-keys.test.js',
   ],
 
+  // Group indent — zero removes only tree drawing, not group furniture.
+  [
+    'lib/frame.js',
+    'if (grouped) {\n      wrote = await state.writeGroups',
+    'if (false) {\n      wrote = await state.writeGroups',
+    'groups: zero indent clears headers and gaps',
+    true,
+    'test/indent-zero.test.js',
+  ],
+  [
+    'lib/state.js',
+    "if (indent) {\n      if (isLastChild) corner = '└─ ';",
+    "if (true) {\n      if (isLastChild) corner = '└─ ';",
+    'groups: a worktree corner survives zero indent',
+    true,
+    'test/indent-zero.test.js',
+  ],
+  [
+    'lib/frame.js',
+    "if (!grouped || !splitCorner || !hasIndent || !splitChild) return '';",
+    "if (!grouped || !splitCorner || !splitChild) return '';",
+    'groups: a split corner survives zero indent',
+    true,
+    'test/indent-zero.test.js',
+  ],
+
   // lib/palette.js — every sidebar ink clears the contrast floor (#5).
   [
     'lib/palette.js',
