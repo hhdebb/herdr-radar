@@ -432,6 +432,17 @@ const cases = [
     'test/scroll-window.test.js',
   ],
 
+  // lib/frame.js — a tab_key that moves on its own must be republished, or
+  // Herdr's order and the drawn group furniture disagree.
+  [
+    'lib/frame.js',
+    'const sortPair = `${sortKey}|${wsKey}|${tabKey}`;',
+    'const sortPair = `${sortKey}|${wsKey}`;',
+    'sort keys: a stale tab_key is never rewritten',
+    true,
+    'test/sort-keys.test.js',
+  ],
+
   // lib/palette.js — every sidebar ink clears the contrast floor (#5).
   [
     'lib/palette.js',
