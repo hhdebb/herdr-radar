@@ -233,7 +233,7 @@ exec claude "$@"
 | `group_indent` | `2` | 見出しの下のメンバーの字下げ幅。`0` でフラット |
 | `group_gap` | `true` | グループ間の空行 |
 | `split_corner` | `false` | 分割画面の残りのペインを `├─` で最初のペインの下にぶら下げる |
-| `show_tab` | `false` | タイトルの前にタブ番号 |
+| `row_label` | `title` | 行の名前：`title` セッションのタイトル、`tab` タブ名、`both` 両方（旧 `show_tab = true`） |
 | `trim_group_prefix` | `true` | 見出しと同じ名前でタイトルが始まるとき、その部分を落とす |
 | `worktree_mark` | `U+F418` | worktree 見出しのマーク（Nerd Font が必要）。空で非表示 |
 | `follow_appearance` | `true` | デスクトップのライト／ダークに合わせて Herdr のテーマを切り替え |

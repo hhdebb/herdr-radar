@@ -212,7 +212,7 @@ exec claude "$@"
 | `group_indent` | `2` | 成员缩进几格，`0` 平铺 |
 | `group_gap` | `true` | 组之间留空行 |
 | `split_corner` | `false` | 分屏的其余面板用 `├─` 角标挂在第一个下面 |
-| `show_tab` | `false` | 标题前显示 tab 号 |
+| `row_label` | `title` | 行显示什么：`title` 会话标题、`tab` tab 名、`both` 两者都显示（原 `show_tab = true`） |
 | `trim_group_prefix` | `true` | 标题开头与分组表头同名时去掉那一截 |
 | `worktree_mark` | `U+F418` | worktree 表头的标记，需要 Nerd Font；置空不画 |
 | `follow_appearance` | `true` | 跟随桌面明暗切换 Herdr 主题 |
