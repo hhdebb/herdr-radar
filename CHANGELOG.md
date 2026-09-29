@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+- **Kilo Code sessions recover their last turn.** Kilo was already drawn with
+  its own mark and colour, but a pane that predated this plugin's daemon had no
+  freshness stamp and read as plain idle forever — which is most of what the
+  stale tier exists to catch. Kilo keeps no per-session file it rewrites as the
+  session runs; its record is a SQLite store holding the session's own
+  last-updated time, so that row is read instead. Read-only, one row, no
+  dependencies. `node:sqlite` only exists from Node 22.5 and is flag-gated on
+  some 22.x builds, so an older runtime answers "no record" and the pane reads
+  as plain idle — the answer this plugin already gives for an agent it cannot
+  follow. The store's own mtime is deliberately not used as a fallback: it
+  would shade one stale pane fresh whenever a different Kilo pane was busy.
+
 ## 1.3.20 — 2026-09-28
 
 - **`row_label` says what names a row.** `show_tab = true` put the tab's
