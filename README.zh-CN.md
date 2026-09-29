@@ -212,12 +212,14 @@ exec claude "$@"
 | `group_indent` | `2` | 成员缩进几格，`0` 平铺 |
 | `group_gap` | `true` | 组之间留空行 |
 | `split_corner` | `false` | 分屏的其余面板用 `├─` 角标挂在第一个下面 |
-| `row_label` | `title` | 行显示什么：`title` 会话标题、`tab` tab 名、`both` 两者都显示（原 `show_tab = true`） |
+| `row_label` | `title` | 行显示什么：`title` 会话标题、`tab` tab 名、`both` 两者或 `model` 模型及会话名称（原 `show_tab = true`） |
 | `trim_group_prefix` | `true` | 标题开头与分组表头同名时去掉那一截 |
 | `worktree_mark` | `U+F418` | worktree 表头的标记，需要 Nerd Font；置空不画 |
 | `follow_appearance` | `true` | 跟随桌面明暗切换 Herdr 主题 |
 | `colors.active_row_bg_light` | `#b9cdf2` | 浅色主题的选中行底色；置空用主题自己的 |
 | `colors.active_row_bg_dark` | `#414868` | 深色主题的选中行底色 |
+
+`row_label = "model"` 优先显示「模型 · 会话名」；没有会话名就只显示模型，读不到模型则回退原来的标题。Herdr 的 `agent.list` 不提供统一的模型/会话名字段，因此本插件在本地解析 Pi、Claude Code、Codex 会话记录，仅提取模型及名称字段；不会把提示词或回复内容显示在侧边栏或发送到网络。Pi 使用 `session_info.name`，Claude 使用自定义或自动生成的标题；Codex 没有统一的会话名称。其他 agent 可通过 `pane report-metadata` 提供纯显示用的 `model`、`session_name` token。会话文件仅限对应客户端的用户配置目录，不影响 agent 的身份与状态判断。
 
 前两项是实时状态，其余存在 `$(herdr plugin config-dir hhdebb.herdr-radar)/config.toml`，
 手改也行，改完 `state-stop` 再 `state-start`。这个文件在弹窗第一次保存时才出现，之前要手改就按上表的键

@@ -236,7 +236,7 @@ the config file and restarts the daemon.
 | `group_gap` | `true` | a blank row between groups |
 | `split_corner` | `false` | hang the other panes of a split screen off the first with a `├─` corner |
 | `reorder_workspaces` | `false` | make Herdr's workspace indices follow Radar's activity order |
-| `row_label` | `title` | what names an agent row: `title`, `tab` (the tab's name) or `both`; replaces `show_tab` |
+| `row_label` | `title` | row text: `title`, `tab`, `both`, or `model` (model + named session when available); replaces `show_tab` |
 | `trim_group_prefix` | `true` | drop the workspace name from a title when the header above already shows it |
 | `worktree_mark` | `U+F418` | the mark on a worktree header, needs a Nerd Font; empty for none |
 | `follow_appearance` | `true` | switch Herdr's theme with the desktop's light/dark |
@@ -249,6 +249,20 @@ the title — what `show_tab = true` did, which still reads as `both`. Pick `tab
 when you name tabs after their sessions, so the name is not written twice. A
 tab-only row keeps its title when the tab was never named (Herdr labels such a
 tab with its number).
+
+`row_label = "model"` shows `model · session name` when both are available,
+just the model when the session has no friendly name, and the normal title
+when no model is available. Herdr does not report a model or friendly session
+name in `agent.list`: Radar parses local Pi, Claude Code, or Codex session
+records to extract only model/name fields; prompts and replies are never
+published to the sidebar or sent over the network. Claude's
+explicit or generated title and Pi's `session_info.name` count as session
+names; Codex sessions have no standard friendly name. Other agents can supply
+display-only `model` and `session_name` tokens with `herdr pane report-metadata`
+from their own integrations. Transcript reads stay local, and only sessions
+under the corresponding CLI's user config directory are accepted. Model and
+name updates appear while agents run; this mode never changes Herdr's agent
+identity or lifecycle state.
 
 Set `reorder_workspaces = true` to make Herdr's actual workspace order follow Radar's
 most-active-first order, so the Spaces list reads in the same order as the Agents panel and

@@ -139,13 +139,13 @@ const FIELDS = [
   {
     key: 'row_label',
     kind: 'enum',
-    options: ['title', 'tab', 'both'],
+    options: ['title', 'tab', 'both', 'model'],
     fallback: 'title',
     // A file from before this setting says `show_tab = true`, which renders
     // as `both` (lib/config.js); the popup shows what renders, not the
     // fallback.
     legacy: (raw) => (raw.show_tab === true ? 'both' : undefined),
-    help: "What names an agent row: the session's title, its tab's name, or both.",
+    help: 'Title, tab, both, or model + session name when available (otherwise title).',
   },
   {
     key: 'trim_group_prefix',
