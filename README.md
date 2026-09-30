@@ -234,6 +234,7 @@ the config file and restarts the daemon.
 | `activity_stale_minutes` | `120` | how long without a turn before the row dims |
 | `group_indent` | `2` | member indent under a header; `0` for a flat list |
 | `group_gap` | `true` | a blank row between groups |
+| `machine_name` | this machine's name | the machine shown in each group header, e.g. `meshnote · Asus-PC`; empty for none |
 | `split_corner` | `false` | hang the other panes of a split screen off the first with a `├─` corner |
 | `reorder_workspaces` | `false` | make Herdr's workspace indices follow Radar's activity order |
 | `row_label` | `title` | what names an agent row: `title`, `tab` (the tab's name) or `both`; replaces `show_tab` |
@@ -249,6 +250,12 @@ the title — what `show_tab = true` did, which still reads as `both`. Pick `tab
 when you name tabs after their sessions, so the name is not written twice. A
 tab-only row keeps its title when the tab was never named (Herdr labels such a
 tab with its number).
+
+`machine_name` puts the machine a group's sessions run on into its header, so a
+panel with more than one machine reads `meshnote · Asus-PC` instead of `meshnote`.
+It defaults to this machine's own name and takes anything you would rather read —
+`local`, a nickname. Set it empty for a header with no machine. The label fades
+along with the name when every session in the group has gone stale.
 
 Set `reorder_workspaces = true` to make Herdr's actual workspace order follow Radar's
 most-active-first order, so the Spaces list reads in the same order as the Agents panel and

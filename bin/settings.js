@@ -154,6 +154,14 @@ const FIELDS = [
     help: 'Drop the workspace name from a title when the header above already shows it.',
   },
   {
+    key: 'machine_name',
+    kind: 'text',
+    // The label the group headers carry, and the only key here whose default
+    // depends on the machine: this host's own name (lib/config.js).
+    fallback: config.machineName,
+    help: "Which machine a group runs on, shown in its header. Empty = no machine. Defaults to this machine's name.",
+  },
+  {
     key: 'worktree_mark',
     kind: 'glyph',
     fallback: '\uf418',

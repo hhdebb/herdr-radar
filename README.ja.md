@@ -232,6 +232,7 @@ exec claude "$@"
 | `activity_stale_minutes` | `120` | この時間ターンがなければ行が薄くなる |
 | `group_indent` | `2` | 見出しの下のメンバーの字下げ幅。`0` でフラット |
 | `group_gap` | `true` | グループ間の空行 |
+| `machine_name` | このマシンの名前 | 各グループの見出しに出すマシン名（例 `meshnote · Asus-PC`）。空で非表示 |
 | `split_corner` | `false` | 分割画面の残りのペインを `├─` で最初のペインの下にぶら下げる |
 | `row_label` | `title` | 行の名前：`title` セッションのタイトル、`tab` タブ名、`both` 両方（旧 `show_tab = true`） |
 | `trim_group_prefix` | `true` | 見出しと同じ名前でタイトルが始まるとき、その部分を落とす |

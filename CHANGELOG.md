@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- **A group header says which machine it runs on.** `meshnote · Asus-PC`
+  rather than `meshnote` alone. Herdr's own `machine` row token cannot carry
+  this — it exists to tell two *connected* machines apart and is dropped on a
+  client with a single local machine, which is exactly the setup where this
+  plugin's rows replace Herdr's. The label is the machine's own OS name by
+  default and `machine_name` overrides it, so a nickname or `local` reads as
+  well; empty turns the label off. It fades with a dormant group, the same as
+  the name beside it.
+
 ## 1.3.20 — 2026-09-28
 
 - **`row_label` says what names a row.** `show_tab = true` put the tab's

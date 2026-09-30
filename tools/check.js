@@ -519,6 +519,42 @@ if (unstable) {
   }
 }
 
+// machine_name is the one key whose default is not a constant: unset means the
+// machine's own name, which no config file can spell. A file that predates the
+// key still has to produce a label, and an explicit empty string has to mean
+// "no label" rather than "fall back to the hostname" — the two are one branch
+// apart and the second was the bug this check exists for.
+{
+  const os = require('node:os');
+  const { spawnSync } = require('node:child_process');
+  const readMachineName = (toml) => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'radar-config-'));
+    fs.writeFileSync(path.join(dir, 'config.toml'), toml);
+    const out = spawnSync(process.execPath, ['-e', "process.stdout.write(require('./lib/config').machineName)"], {
+      cwd: root,
+      env: { ...process.env, HERDR_PLUGIN_CONFIG_DIR: dir },
+      encoding: 'utf8',
+    });
+    fs.rmSync(dir, { recursive: true, force: true });
+    return out.stdout;
+  };
+  const hostname = os.hostname();
+  const cases = [
+    ['', hostname],
+    ['machine_name = ""\n', ''],
+    ['machine_name = "  "\n', '  '],
+    ['machine_name = "Local"\n', 'Local'],
+    ['machine_name = "Asus-PC"\n', 'Asus-PC'],
+  ];
+  for (const [toml, expected] of cases) {
+    const got = readMachineName(toml);
+    if (got !== expected)
+      problems.push(
+        `config: ${JSON.stringify(toml)} reads machine_name as ${JSON.stringify(got)}, expected ${JSON.stringify(expected)}`,
+      );
+  }
+}
+
 // Liveness is asked of the endpoint, never of a pid file.
 //
 // `kill(pid, 0)` on the pid file only says that SOME process has the number,

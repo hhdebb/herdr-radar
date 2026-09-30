@@ -211,6 +211,7 @@ exec claude "$@"
 | `activity_stale_minutes` | `120` | 多久没动算 stale，整行变暗 |
 | `group_indent` | `2` | 成员缩进几格，`0` 平铺 |
 | `group_gap` | `true` | 组之间留空行 |
+| `machine_name` | 本机名称 | 每个分组表头显示的机器名（如 `meshnote · Asus-PC`）；置空不显示 |
 | `split_corner` | `false` | 分屏的其余面板用 `├─` 角标挂在第一个下面 |
 | `row_label` | `title` | 行显示什么：`title` 会话标题、`tab` tab 名、`both` 两者都显示（原 `show_tab = true`） |
 | `trim_group_prefix` | `true` | 标题开头与分组表头同名时去掉那一截 |
