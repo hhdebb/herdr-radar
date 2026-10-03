@@ -56,7 +56,7 @@ function withKiloDir(dir, run) {
 
 test('kilo recovery reads the sessions own last-updated time', (t) => {
   const dir = seedStore('ses_a', 1790700592771);
-  if (dir === null) return t.skip('runtime has no built-in sqlite reader');
+  if (dir === null || !activity.sqliteReadsOnly()) return t.skip('runtime cannot read a store read-only');
   withKiloDir(dir, () => {
     assert.equal(activity.recover('kilo', 'ses_a'), 1790700592771);
   });
@@ -64,7 +64,7 @@ test('kilo recovery reads the sessions own last-updated time', (t) => {
 
 test('kilo recovery of an unknown session is null, not a store-wide guess', (t) => {
   const dir = seedStore('ses_a', 1790700592771);
-  if (dir === null) return t.skip('runtime has no built-in sqlite reader');
+  if (dir === null || !activity.sqliteReadsOnly()) return t.skip('runtime cannot read a store read-only');
   withKiloDir(dir, () => {
     // Another pane's activity must never be attributed to this one, which is
     // exactly why the store's own mtime is not used as a fallback.
@@ -88,6 +88,7 @@ test('kilo recovery of a store with a foreign layout is null', (t) => {
   } catch {
     return t.skip('runtime has no built-in sqlite reader');
   }
+  if (!activity.sqliteReadsOnly()) return t.skip('runtime cannot read a store read-only');
   // A Kilo that renamed its table: the query fails, and that must read as
   // "no record", not as an error that takes the frame down.
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'radar-kilo-'));
@@ -119,5 +120,22 @@ test('recovery without a session id stays null for every agent', () => {
   for (const kind of ['claude', 'codex', 'kilo', 'unheard-of']) {
     assert.equal(activity.recover(kind, ''), null, kind);
     assert.equal(activity.recover(kind, undefined), null, kind);
+  }
+});
+
+// The gate itself: only runtimes whose `readOnly` is real may open the store.
+test('only runtimes that honour readOnly may read the store', () => {
+  const cases = {
+    '18.20.4': false,
+    '22.11.0': false,
+    '22.12.0': true,
+    '23.1.0': false,
+    '23.2.0': true,
+    '24.0.0': true,
+    '22.12.0-pre': false,
+    '25.0.0-nightly20260101': false,
+  };
+  for (const [version, expected] of Object.entries(cases)) {
+    assert.equal(activity.sqliteReadsOnly(version), expected, version);
   }
 });
