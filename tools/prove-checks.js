@@ -450,6 +450,23 @@ const cases = [
     'test/appearance-write.test.js',
   ],
 
+  [
+    'lib/state.js',
+    'if (!(await clearRetiredSpaceTokens(source, workspaceId))) return false;',
+    '',
+    'spaces: a working mark a vendor lost stays on the workspace, counted against its 32 keys',
+    true,
+    'test/spaces-row-limit.test.js',
+  ],
+  [
+    'lib/managed-config.js',
+    'if (topLevelRows(block.slice(open + 1, close)).some((row) => tokensIn(row) > ROW_TOKEN_LIMIT)) return true;',
+    '',
+    'config: a block broken by 1.3.21 is not recognised, so an upgrade does not repair it',
+    true,
+    'test/spaces-row-limit.test.js',
+  ],
+
   // lib/workspace-order.js — the order must settle or it loops over IPC.
   [
     'lib/workspace-order.js',

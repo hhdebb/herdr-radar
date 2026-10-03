@@ -1,0 +1,59 @@
+'use strict';
+
+// 1.3.21 took the Spaces mark row to eighteen tokens; Herdr refuses a sidebar
+// row over sixteen and, with it, the whole config.toml. Three things keep that
+// from coming back: the generated rows fit, a block already broken by an older
+// version is recognised (the daemon rewrites it on start), and the working
+// marks a vendor lost are cleared from workspaces before anything new is
+// written — a stale one still counts against Herdr's 32 keys per workspace.
+
+const test = require('node:test');
+const assert = require('node:assert/strict');
+
+const ipc = require('../lib/ipc');
+const managed = require('../lib/managed-config');
+const palette = require('../lib/palette');
+const state = require('../lib/state');
+const identity = require('../lib/identity');
+
+test('every generated sidebar row fits Herdr’s sixteen tokens', () => {
+  for (const variant of ['light', 'dark']) {
+    const block = managed.sidebarBlock(variant);
+    assert.equal(managed.blockOverLimit(`${block}\n`), false, variant);
+  }
+});
+
+test('a block whose Spaces row is over the limit is recognised', () => {
+  const sidebar = identity.markers('sidebar');
+  const cells = Array.from({ length: 18 }, (_, i) => `{ token = "$t${i}" }`).join(', ');
+  const broken = `${sidebar.start}\n[ui.sidebar.spaces]\nrows = [\n  [${cells}],\n  ["$x"]\n]\n${sidebar.end}\n`;
+  assert.equal(managed.blockOverLimit(broken), true);
+  assert.equal(managed.blockOverLimit(broken.replace(cells, '{ token = "$a" }')), false);
+  assert.equal(managed.blockOverLimit('[ui]\n'), false, 'no block, nothing to repair');
+});
+
+test('the vendors without a working cell are exactly the retired tokens', () => {
+  const kept = new Set(palette.spaceWorkingVendors);
+  const retired = palette.brandVendors.filter((v) => !kept.has(v)).map((v) => `space_working_${v}`);
+  assert.deepEqual(state.RETIRED_SPACE_TOKENS, retired);
+  for (const name of state.RETIRED_SPACE_TOKENS) assert.ok(!state.SPACE_TOKENS.includes(name), name);
+});
+
+test('retired working marks are cleared once, before the state is written', async (t) => {
+  if (state.RETIRED_SPACE_TOKENS.length === 0) return t.skip('no vendor has lost its working mark');
+  const sent = [];
+  t.mock.method(ipc, 'call', async (method, params) => {
+    sent.push(Object.keys(params.tokens ?? {}));
+    return { result: {} };
+  });
+  await state.writeSpaceState('test', 'w-limit', 'space_none', '·', {}, 'name');
+  const firstBatch = sent.length;
+  assert.ok(firstBatch >= 2, 'nothing was cleared before the write');
+  assert.deepEqual(sent[0].sort(), [...state.RETIRED_SPACE_TOKENS].sort(), 'the first report was not the clear');
+  await state.writeSpaceState('test', 'w-limit', 'space_none', '·', {}, 'name');
+  const again = sent.slice(firstBatch);
+  assert.ok(
+    again.every((names) => !names.some((n) => state.RETIRED_SPACE_TOKENS.includes(n))),
+    'the retired marks were cleared a second time',
+  );
+});
