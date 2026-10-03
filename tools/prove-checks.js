@@ -433,6 +433,23 @@ const cases = [
     'rows: a blank tab name replaces the title with nothing',
   ],
 
+  // lib/palette.js / lib/managed-config.js — a Spaces row over Herdr's
+  // sixteen-token limit took every user's config down in 1.3.21.
+  [
+    'lib/palette.js',
+    'brandVendors.slice(0, SPACE_ROW_TOKEN_LIMIT - SPACE_ROW_FIXED_CELLS)',
+    'brandVendors.slice()',
+    'config: the Spaces mark row grows past sixteen tokens (shipped v1.3.21-v1.4.0)',
+  ],
+  [
+    'lib/managed-config.js',
+    'const unparsable = checkedWrite(report.file, next, backup(report.file));',
+    'const unparsable = (backup(report.file), writeAtomic(report.file, next, identity.TMP_SUFFIX), null);',
+    'config: the appearance switch writes a block Herdr cannot parse (shipped v1.0.0-v1.4.0)',
+    true,
+    'test/appearance-write.test.js',
+  ],
+
   // lib/workspace-order.js — the order must settle or it loops over IPC.
   [
     'lib/workspace-order.js',
