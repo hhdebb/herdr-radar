@@ -177,7 +177,7 @@ Gemini are told apart there too.
 
 ## Which agents it knows
 
-Twenty-five vendors have a mark of their own:
+Twenty-six vendors have a mark of their own:
 
 <!-- prettier-ignore -->
 | | | | |
@@ -187,10 +187,10 @@ Twenty-five vendors have a mark of their own:
 | <img src="assets/marks/devin.svg" width="15" align="top"> Devin | <img src="assets/marks/gemini.svg" width="15" align="top"> Gemini | <img src="assets/marks/glm.svg" width="15" align="top"> GLM | <img src="assets/marks/gpt.svg" width="15" align="top"> GPT |
 | <img src="assets/marks/grok.svg" width="15" align="top"> Grok | <img src="assets/marks/hermes.svg" width="15" align="top"> Hermes | <img src="assets/marks/kilo.svg" width="15" align="top"> Kilo | <img src="assets/marks/kimchi.svg" width="15" align="top"> Kimchi |
 | <img src="assets/marks/kimi.svg" width="15" align="top"> Kimi | <img src="assets/marks/kiro.svg" width="15" align="top"> Kiro | <img src="assets/marks/maki.svg" width="15" align="top"> Maki | <img src="assets/marks/mastracode.svg" width="15" align="top"> Mastra |
-| <img src="assets/marks/omp.svg" width="15" align="top"> Oh My Pi | <img src="assets/marks/opencode.svg" width="15" align="top"> OpenCode | <img src="assets/marks/pi.svg" width="15" align="top"> Pi | <img src="assets/marks/qodercli.svg" width="15" align="top"> Qoder |
-| <img src="assets/marks/qwen.svg" width="15" align="top"> Qwen | | | |
+| <img src="assets/marks/muse.svg" width="15" align="top"> Muse | <img src="assets/marks/omp.svg" width="15" align="top"> Oh My Pi | <img src="assets/marks/opencode.svg" width="15" align="top"> OpenCode | <img src="assets/marks/pi.svg" width="15" align="top"> Pi |
+| <img src="assets/marks/qodercli.svg" width="15" align="top"> Qoder | <img src="assets/marks/qwen.svg" width="15" align="top"> Qwen | | |
 
-Herdr detects three more — Droid, Letta and Muse — and none publishes a mark this project can use.
+Herdr detects two more — Droid and Letta — and neither publishes a mark this project can use.
 Those rows behave like any other — state, colour, ordering, grouping — they just wear the
 generic mark instead of one of their own. A pull request adding either is welcome; the marks
 for Antigravity and Kiro arrived that way.
@@ -294,7 +294,7 @@ terminal and reopen it. macOS keeps an extra cache: `killall fontd fontworker`, 
 Another font claimed the same Private Use Area — CJK fonts often do. The terminal must map the
 codepoints to `Herdr Agent Icons Max`; adding it as a fallback family is not enough. Ghostty /
 kitty: `herdr plugin action invoke hhdebb.herdr-radar.install-font` writes the map. Other
-terminals: map `U+E1A0–U+E1B8` and `U+E1C0–U+E1C5` by hand. Terminals with no codepoint map
+terminals: map `U+E1A0–U+E1B9` and `U+E1C0–U+E1C5` by hand. Terminals with no codepoint map
 (Windows Terminal, iTerm): use `dist/JetBrainsMonoHerdr-Regular.ttf` as the terminal font —
 JetBrains Mono with the icons patched in.
 

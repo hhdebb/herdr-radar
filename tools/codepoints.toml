@@ -37,8 +37,11 @@ glm = "E1B7"
 # `kimchi` binary; the pane reports itself through Kimchi's own Herdr
 # extension (getkimchi/herdr-kimchi), which names the agent `kimchi`.
 kimchi = "E1B8"
+# Muse Code, Meta's coding agent. It publishes no mark of its own: its site
+# (dev.meta.ai) signs it with Meta's, so that is the mark it wears here.
+muse = "E1B9"
 
-# Lifecycle states. E1B9-E1BF stays free for future vendor marks.
+# Lifecycle states. E1BA-E1BF stays free for future vendor marks.
 state_done = "E1C0"
 state_blocked = "E1C1"
 state_idle = "E1C2"
@@ -108,3 +111,4 @@ devin = 1.43
 qodercli = 1.60
 glm = 1.64
 kimchi = 1.64
+muse = 1.64

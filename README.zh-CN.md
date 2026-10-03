@@ -160,7 +160,7 @@ Spaces 那一列用的是同一套厂商色，所以在那边也分得出哪个�
 
 ## 支持哪些 agent
 
-二十五家有自己的标记：
+二十六家有自己的标记：
 
 <!-- prettier-ignore -->
 | | | | |
@@ -170,10 +170,10 @@ Spaces 那一列用的是同一套厂商色，所以在那边也分得出哪个�
 | <img src="assets/marks/devin.svg" width="15" align="top"> Devin | <img src="assets/marks/gemini.svg" width="15" align="top"> Gemini | <img src="assets/marks/glm.svg" width="15" align="top"> GLM | <img src="assets/marks/gpt.svg" width="15" align="top"> GPT |
 | <img src="assets/marks/grok.svg" width="15" align="top"> Grok | <img src="assets/marks/hermes.svg" width="15" align="top"> Hermes | <img src="assets/marks/kilo.svg" width="15" align="top"> Kilo | <img src="assets/marks/kimchi.svg" width="15" align="top"> Kimchi |
 | <img src="assets/marks/kimi.svg" width="15" align="top"> Kimi | <img src="assets/marks/kiro.svg" width="15" align="top"> Kiro | <img src="assets/marks/maki.svg" width="15" align="top"> Maki | <img src="assets/marks/mastracode.svg" width="15" align="top"> Mastra |
-| <img src="assets/marks/omp.svg" width="15" align="top"> Oh My Pi | <img src="assets/marks/opencode.svg" width="15" align="top"> OpenCode | <img src="assets/marks/pi.svg" width="15" align="top"> Pi | <img src="assets/marks/qodercli.svg" width="15" align="top"> Qoder |
-| <img src="assets/marks/qwen.svg" width="15" align="top"> Qwen | | | |
+| <img src="assets/marks/muse.svg" width="15" align="top"> Muse | <img src="assets/marks/omp.svg" width="15" align="top"> Oh My Pi | <img src="assets/marks/opencode.svg" width="15" align="top"> OpenCode | <img src="assets/marks/pi.svg" width="15" align="top"> Pi |
+| <img src="assets/marks/qodercli.svg" width="15" align="top"> Qoder | <img src="assets/marks/qwen.svg" width="15" align="top"> Qwen | | |
 
-Herdr 还认得另外三家，Droid、Letta 和 Muse，这三家都没有本项目能用的公开标记。它们的行跟别的行一样
+Herdr 还认得另外两家，Droid 和 Letta，这两家都没有本项目能用的公开标记。它们的行跟别的行一样
 工作 —— 状态、颜色、排序、分组都正常 —— 只是穿的是通用标记而不是自己的。欢迎发 PR 把它们补上；
 Antigravity 和 Kiro 的标记就是这么来的。
 
@@ -240,7 +240,7 @@ exec claude "$@"
 
 这段私有区被别的字体抢了，CJK 字体尤其常见。终端必须按码位映射到 `Herdr Agent Icons Max`，
 只加进 fallback 家族不够。Ghostty / kitty 跑一次 `herdr plugin action invoke hhdebb.herdr-radar.install-font`
-就写好了；其他终端手动映射 `U+E1A0–U+E1B8` 和 `U+E1C0–U+E1C5`。没有按码位映射能力的终端
+就写好了；其他终端手动映射 `U+E1A0–U+E1B9` 和 `U+E1C0–U+E1C5`。没有按码位映射能力的终端
 （Windows Terminal、iTerm）改用 `dist/JetBrainsMonoHerdr-Regular.ttf` 当主字体，它是打进了
 图标的 JetBrains Mono。
 
