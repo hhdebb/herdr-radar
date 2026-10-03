@@ -481,6 +481,293 @@ if (unstable) {
   }
 }
 
+// Parent-token checks use a fresh process and a scratch config for each
+// fixture. All Herdr reads and writes are replaced before any frame runs.
+// This keeps the harness synchronous, like the config checks below, while
+// checking the real async token-publication boundary too.
+{
+  const assert = require('node:assert/strict');
+  const os = require('node:os');
+  const fixture = String.raw`
+    const fs = require('node:fs');
+    const input = JSON.parse(fs.readFileSync(0, 'utf8'));
+    const herdr = require('./lib/herdr');
+    const state = require('./lib/state');
+    const config = require('./lib/config');
+    const { Frame } = require('./lib/frame');
+    const { desiredOrder } = require('./lib/workspace-order');
+    const managed = require('./lib/managed-config');
+    const paneTokens = {};
+    const spaceTokens = {};
+    herdr.tabsAsync = async () => [{ tab_id: 't', label: '1' }];
+    herdr.workspacesAsync = async () => input.list;
+    herdr.reportMetadataAsync = async (id, source, tokens) => {
+      paneTokens[id] = { ...paneTokens[id], ...tokens }; return true;
+    };
+    herdr.reportWorkspaceMetadataAsync = async (id, source, tokens) => {
+      spaceTokens[id] = { ...spaceTokens[id], ...tokens }; return true;
+    };
+    (async () => {
+      const tree = await state.labels(60000);
+      const frame = new Frame('fixture');
+      const entries = input.list.filter(ws => !ws.no_agent).map((ws, i) => ({
+        workspace: ws.workspace_id, pane: ws.workspace_id + ':p', tab: ws.workspace_id + ':t',
+        name: 'codex', title: ws.label,
+      }));
+      entries.forEach((entry, i) => frame.lastWorkingAt.set(entry.pane, input.tied ? 60000 : (i + 1) * 60000));
+      const keys = frame.sortKeys(entries, tree.parents, tree.worktrees, tree.familyLabels);
+      const grouped = frame.displayOrder(entries, 'grouped', keys);
+      await state.writeGroups('fixture', grouped, tree.workspaces, new Set(), keys);
+      const jobs = [];
+      frame.spaceJobs(new Map(), tree.workspaces, 60000, jobs);
+      await Promise.all(jobs);
+      const beforeClear = JSON.parse(JSON.stringify(spaceTokens));
+      await state.clearSpaceState('fixture', input.list[0].workspace_id);
+      const order = input.order ?? input.list.map(ws => ws.workspace_id);
+      const spaces = desiredOrder(order, keys.wsKeys, tree.parents);
+      const spacesAgain = desiredOrder(spaces, keys.wsKeys, tree.parents);
+      console.log(JSON.stringify({
+        config: [config.parentToken, config.parentLabelToken],
+        parents: [...tree.parents], worktrees: [...tree.worktrees], families: [...tree.familyLabels],
+        keys: [...keys.wsKeys], paneTokens,
+        spaceTokens: beforeClear, cleared: spaceTokens[input.list[0].workspace_id],
+        grouped: grouped.map(entry => entry.workspace),
+        recent: frame.displayOrder(entries, 'recent', keys).map(entry => entry.workspace),
+        spaces, spacesAgain, blocks: ['light', 'dark'].map(v => managed.sidebarBlock(v)),
+      }));
+    })().catch(error => { console.error(error); process.exitCode = 1; });
+  `;
+  const inspect = (list, toml = '', order, tied = false) => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'radar-parent-check-'));
+    try {
+      fs.writeFileSync(path.join(dir, 'config.toml'), toml);
+      fs.writeFileSync(
+        path.join(dir, 'rename-hook.js'),
+        "module.exports = { workspace: () => 'RENAMED', branch: () => 'RENAMED' };\n",
+      );
+      return JSON.parse(
+        execFileSync(process.execPath, ['-e', fixture], {
+          cwd: root,
+          input: JSON.stringify({ list, order, tied }),
+          env: {
+            ...process.env,
+            HERDR_PLUGIN_CONFIG_DIR: dir,
+            HERDR_PLUGIN_STATE_DIR: dir,
+            HERDR_RADAR_STATE: dir,
+            XDG_CONFIG_HOME: dir,
+            XDG_STATE_HOME: dir,
+            HERDR_BIN_PATH: path.join(dir, 'no-live-herdr'),
+          },
+          encoding: 'utf8',
+        }),
+      );
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  };
+  const check = (name, run) => {
+    try {
+      run();
+    } catch (error) {
+      problems.push(`parent tokens (${name}): ${error.message}`);
+    }
+  };
+  const settings = 'parent_token = "project_parent"\nparent_label_token = "project_name"\n';
+  const ws = (id, parent, label, linked) => ({
+    workspace_id: id,
+    label: id,
+    tokens: { project_parent: parent, project_name: label },
+    ...(linked === undefined ? {} : { worktree: { repo_key: '/r/.git', repo_name: 'r', is_linked_worktree: linked } }),
+  });
+  const headers = (result) =>
+    Object.values(result.paneTokens)
+      .map((t) => t.group_parent)
+      .filter(Boolean);
+  const contiguous = (order, members) => {
+    const positions = members.map((id) => order.indexOf(id));
+    assert(positions.every((i) => i >= 0));
+    assert.equal(Math.max(...positions) - Math.min(...positions), members.length - 1);
+  };
+
+  check('1 defaults preserve git maps and published tokens', () => {
+    const list = [ws('main', null, null, false), ws('branch', 'project', 'Alpha', true), ws('project')];
+    const before = inspect(list);
+    const explicit = inspect(list, 'parent_token = ""\nparent_label_token = ""\n');
+    assert.deepEqual(before.config, ['', '']);
+    assert.deepEqual(before.parents, [['branch', 'main']]);
+    assert.deepEqual(before.worktrees, [['branch', 'r']]);
+    for (const field of ['parents', 'keys', 'paneTokens', 'spaceTokens', 'blocks', 'spaces', 'recent']) {
+      assert.deepEqual(explicit[field], before[field], field);
+    }
+    assert.equal(before.paneTokens['branch:p'].group_parent, null);
+    assert(before.paneTokens['branch:p'].group.includes('└─'));
+    assert.equal(before.paneTokens['main:p'].gap, null);
+    assert.deepEqual(inspect(list, 'parent_token = true\nparent_label_token = 7\n').config, ['', '']);
+  });
+  check('2 token parent overrides git', () => {
+    const result = inspect(
+      [ws('main', null, null, false), ws('child', 'parent', 'Alpha', true), ws('parent')],
+      settings,
+    );
+    assert.deepEqual(result.parents, [['child', 'parent']]);
+    assert(!result.worktrees.some(([id]) => id === 'child'));
+    assert.deepEqual(headers(result), []);
+    contiguous(result.grouped, ['parent', 'child']);
+    assert(result.grouped.indexOf('parent') < result.grouped.indexOf('child'));
+    // Keep one compatibility assertion for an object-shaped token value.
+    const object = ws('child');
+    object.tokens = { project_parent: { value: 'parent' } };
+    assert.deepEqual(inspect([object, ws('parent')], settings).parents, [['child', 'parent']]);
+  });
+  check('3 linked token parent becomes top-level', () => {
+    const result = inspect(
+      [ws('main', null, null, false), ws('parent', 'main', 'Alpha', true), ws('child', 'parent')],
+      settings,
+    );
+    assert.deepEqual(result.parents, [['child', 'parent']]);
+    assert.deepEqual(result.worktrees, []);
+    assert.equal(result.paneTokens['parent:p'].group, 'parent');
+  });
+  check('4 self unknown chain and cycle links', () => {
+    for (const parent of ['child', 'missing', 12, {}]) {
+      const list = [ws('main', null, null, false), ws('child', parent, null, true)];
+      assert.deepEqual(inspect(list, settings).parents, [['child', 'main']]);
+      list[1].tokens.project_name = 'fallback';
+      assert.deepEqual(headers(inspect(list, settings)), ['fallback']);
+    }
+    const chain = inspect([ws('a', 'b'), ws('b', 'c'), ws('c')], settings);
+    assert.deepEqual(chain.parents, [['a', 'b']]);
+    assert.deepEqual(inspect([ws('a', 'b'), ws('b', 'a')], settings).parents, []);
+  });
+  check('5 label-only families get one header and sort together', () => {
+    const list = [
+      ws('linked', null, 'Alpha', true),
+      ws('a', null, 'Alpha'),
+      ws('other'),
+      ws('b', null, 'Alpha'),
+      ws('c', null, 'Alpha'),
+      { ...ws('quiet', null, 'Alpha'), no_agent: true },
+    ];
+    const result = inspect(list, settings);
+    assert.deepEqual(headers(result), ['Alpha']);
+    assert.deepEqual(result.worktrees, [], 'label-only members leave the git worktree map');
+    contiguous(result.grouped, ['linked', 'a', 'b', 'c']);
+    contiguous(result.spaces, ['linked', 'a', 'b', 'c', 'quiet']);
+    assert.deepEqual(
+      result.recent,
+      list.filter((w) => !w.no_agent).map((w) => w.workspace_id),
+      'recent remains flat',
+    );
+    const family = new Map(result.parents).get('a');
+    for (const id of ['linked', 'a', 'b', 'c', 'quiet']) assert.equal(new Map(result.parents).get(id), family);
+    assert.equal(result.paneTokens['c:p'].gap, null);
+    assert.equal(result.paneTokens['b:p'].gap, null);
+    assert(result.paneTokens['c:p'].group.includes('├─'));
+    assert(result.paneTokens['linked:p'].group.includes('└─'));
+    assert(result.paneTokens['c:p'].group.startsWith('├─'), 'synthesized header indents its first corner');
+    assert(result.paneTokens['b:p'].group.startsWith(state.INDENT), 'later corners need explicit indent');
+    const two = inspect([...list, ws('d', null, 'Beta'), ws('e', null, 'Beta')], settings);
+    assert.deepEqual(headers(two).sort(), ['Alpha', 'Beta']);
+    contiguous(two.grouped, ['d', 'e']);
+    const collision = inspect([ws('parent-label:"Alpha"'), ...list], settings);
+    assert.notEqual(new Map(collision.parents).get('a'), 'parent-label:"Alpha"');
+    assert.deepEqual(headers(collision), ['Alpha']);
+    const tied = inspect(
+      [ws('a', null, 'Alpha'), ws('b', null, 'Alpha-0'), ws('c', null, 'Alpha'), ws('d', null, 'Alpha-0')],
+      settings,
+      undefined,
+      true,
+    );
+    contiguous(tied.grouped, ['a', 'c']);
+    contiguous(tied.grouped, ['b', 'd']);
+    contiguous(tied.spaces, ['a', 'c']);
+    contiguous(tied.spaces, ['b', 'd']);
+  });
+  check('6 labelled parent children and label-only member merge', () => {
+    const list = [
+      ws('parent', null, 'Alpha'),
+      ws('a', 'parent', 'Alpha'),
+      ws('other'),
+      ws('b', 'parent', 'Alpha'),
+      ws('c', null, 'Alpha'),
+    ];
+    const result = inspect(list, settings);
+    assert.deepEqual(result.parents, [
+      ['a', 'parent'],
+      ['b', 'parent'],
+      ['c', 'parent'],
+    ]);
+    assert.deepEqual(headers(result), []);
+    contiguous(result.grouped, ['parent', 'a', 'b', 'c']);
+    assert.equal(result.grouped[0], 'parent');
+    list[0].no_agent = true;
+    const emptyParent = inspect(list, settings);
+    assert.deepEqual(headers(emptyParent), ['Alpha']);
+    contiguous(emptyParent.grouped, ['a', 'b', 'c']);
+  });
+  check('7 desiredOrder keeps parent first and family contiguous', () => {
+    const list = [
+      ws('main', null, null, false),
+      ws('parent'),
+      ws('a', 'parent'),
+      ws('other'),
+      ws('b', 'parent', null, true),
+      { ...ws('quiet', 'parent'), no_agent: true },
+    ];
+    const result = inspect(list, settings, ['a', 'other', 'quiet', 'b', 'main', 'parent']);
+    assert.deepEqual(result.worktrees, [], 'linked members leave their git family');
+    contiguous(result.spaces, ['parent', 'a', 'b', 'quiet']);
+    assert(result.spaces.indexOf('parent') < result.spaces.indexOf('a'));
+    assert(result.spaces.indexOf('parent') < result.spaces.indexOf('b'));
+    assert(result.spaces.indexOf('parent') < result.spaces.indexOf('quiet'));
+    assert.deepEqual(result.spacesAgain, result.spaces);
+  });
+  check('9 token-family checkouts no longer parent token-free git worktrees', () => {
+    const list = [
+      ws('parent'),
+      ws('main', 'parent', null, false),
+      ws('g', null, null, true),
+      ws('h', null, null, true),
+    ];
+    const result = inspect(list, settings);
+    assert.deepEqual(result.parents, [['main', 'parent']]);
+    assert.deepEqual(result.worktrees, [
+      ['g', 'r'],
+      ['h', 'r'],
+    ]);
+    assert.deepEqual(headers(result), ['r', 'r'], 'git orphans keep their individual headers');
+    for (const id of ['g', 'h']) assert(result.paneTokens[`${id}:p`].group.startsWith('└─'));
+    assert.equal(result.paneTokens['parent:p'].group, 'parent');
+    assert(result.paneTokens['main:p'].group.includes('└─'));
+    contiguous(result.grouped, ['parent', 'main']);
+    contiguous(result.spaces, ['parent', 'main']);
+  });
+  check('10 zero indent keeps synthetic family headers without corners', () => {
+    const result = inspect([ws('a', null, 'Alpha'), ws('b', null, 'Alpha')], settings + 'group_indent = 0\n');
+    assert.deepEqual(headers(result), ['Alpha']);
+    for (const id of ['a', 'b']) {
+      const group = result.paneTokens[`${id}:p`].group;
+      assert(!/[├└]─/.test(group), 'zero indent kept a corner');
+      assert(group.endsWith(id), 'zero indent lost a member name');
+    }
+    assert.equal(Object.values(result.paneTokens).filter((t) => t.gap).length, 1, 'family keeps its ending gap');
+  });
+  check('12 token parent headers use hooked labels', () => {
+    for (const linked of [false, true]) {
+      for (const no_agent of [false, true]) {
+        const list = [
+          { ...ws('parent', null, null, linked), label: 'raw-parent-name', no_agent },
+          { ...ws('child', 'parent'), label: 'raw-child-name' },
+        ];
+        const result = inspect(list, settings + 'render_hook = "rename-hook.js"\n');
+        assert.deepEqual(headers(result), no_agent ? ['RENAMED'] : []);
+        const published = JSON.stringify([result.paneTokens, result.spaceTokens, result.cleared]);
+        for (const { label } of list) assert(!published.includes(label), `published raw label ${label}`);
+      }
+    }
+  });
+}
+
 // row_label: each mode names the row as documented, and a tab-only row keeps
 // its title when the tab is unnamed or carries only Herdr's number.
 {

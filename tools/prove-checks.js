@@ -63,6 +63,66 @@ const GHOSTTY = 'lines: RANGES.map(([a, b]) => `font-codepoint-map = U+${a}-U+${
 const KITTY = 'lines: RANGES.map(([a, b]) => `symbol_map U+${a}-U+${b} ${FONT_FAMILY}`),';
 
 const cases = [
+  // Parent-token fixture groups: prove each new boundary can reject a
+  // broken implementation, including the opt-in/default compatibility rule.
+  [
+    'lib/config.js',
+    "parentToken: typeof raw.parent_token === 'string' ? raw.parent_token : '',",
+    "parentToken: typeof raw.parent_token === 'string' ? raw.parent_token : 'project_parent',",
+    'parent tokens 1: unset config silently enables token parenting',
+  ],
+  ['lib/state.js', '    parents.set(child, parent);', '', 'parent tokens 2: token parent never overrides git'],
+  ['lib/state.js', '    parents.delete(root);', '', 'parent tokens 3: a linked token parent keeps its git parent'],
+  [
+    'lib/state.js',
+    '    if (roots.has(child)) continue;',
+    '',
+    'parent tokens 4: outgoing root links make chains and cycles',
+  ],
+  [
+    'lib/state.js',
+    'synthetic && name !== null && firstChild.get(parent) === entry.workspace',
+    'synthetic && name !== null',
+    'parent tokens 5: every label-only member draws a duplicate header',
+  ],
+  [
+    'lib/state.js',
+    '    if (label && !byLabel.has(label)) byLabel.set(label, parent);',
+    '',
+    'parent tokens 6: label-only member misses the open project parent',
+  ],
+  [
+    'lib/state.js',
+    'familyLabels.set(parent, label ?? workspaces.get(parent) ?? parent);',
+    'familyLabels.set(parent, label ?? byId.get(parent).label ?? parent);',
+    'parent tokens 12: a synthetic token-parent header bypasses the render hook',
+  ],
+  [
+    'lib/workspace-order.js',
+    '      if (index > 0) group.ids.unshift(...group.ids.splice(index, 1));',
+    '',
+    'parent tokens 7: Spaces keeps a child ahead of its parent',
+  ],
+  [
+    'lib/state.js',
+    '    if (worktrees.has(child) && parents.has(parent)) parents.delete(child);',
+    '',
+    'parent tokens 9: git child makes a second level under a token-family checkout',
+  ],
+
+  [
+    'lib/state.js',
+    '    parents.set(id, byLabel.get(label));\n    worktrees.delete(id);',
+    '    parents.set(id, byLabel.get(label));',
+    'parent tokens RM4: label-only project member keeps its git worktree entry',
+  ],
+  [
+    'lib/workspace-order.js',
+    '    const root = rootOf(workspaceId, parents);',
+    '    const root = workspaceId;',
+    'parent tokens RM7: Spaces ignores parents of agent-less project members',
+  ],
+
   // lib/font.js — the terminal blocks. #4 and #8 were both shipped for months.
   [
     'lib/font.js',
@@ -485,8 +545,8 @@ const cases = [
   ],
   [
     'lib/workspace-order.js',
-    'return [...active, ...inactive].flatMap((group) => group.ids);',
-    'return [...active, ...inactive.reverse()].flatMap((group) => group.ids);',
+    'return [...active, ...inactive].flatMap((group) => {',
+    'return [...active, ...inactive.reverse()].flatMap((group) => {',
     'workspace order: inactive block flipped on every pass',
   ],
 
