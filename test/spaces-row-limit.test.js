@@ -30,6 +30,11 @@ test('a block whose Spaces row is over the limit is recognised', () => {
   assert.equal(managed.blockOverLimit(broken), true);
   assert.equal(managed.blockOverLimit(broken.replace(cells, '{ token = "$a" }')), false);
   assert.equal(managed.blockOverLimit('[ui]\n'), false, 'no block, nothing to repair');
+  // A bracket inside a value is not a row: a rule matching "[" must not read
+  // as an over-full row, or the daemon would rewrite a valid block on start.
+  const rule = '{ token = "$logo", rules = [{ contains = "[", fg = "#ff0000" }] }';
+  const quoted = `${sidebar.start}\n[ui.sidebar.agents]\nrows = [[${rule}]]\n${sidebar.end}\n`;
+  assert.equal(managed.blockOverLimit(quoted), false, 'a bracket in a string counted as structure');
 });
 
 test('the vendors without a working cell are exactly the retired tokens', () => {

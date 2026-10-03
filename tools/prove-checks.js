@@ -467,6 +467,15 @@ const cases = [
     'test/spaces-row-limit.test.js',
   ],
 
+  [
+    'lib/managed-config.js',
+    '  const block = neutralize(text.slice(start, end));',
+    '  const block = text.slice(start, end);',
+    'config: a bracket inside a rule reads as an over-full row, rewriting a valid block',
+    true,
+    'test/spaces-row-limit.test.js',
+  ],
+
   // lib/workspace-order.js — the order must settle or it loops over IPC.
   [
     'lib/workspace-order.js',
