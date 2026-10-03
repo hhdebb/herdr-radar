@@ -79,14 +79,40 @@ test('kilo recovery of a missing or unreadable store is null', () => {
 });
 
 test('kilo recovery of a store with a foreign layout is null', (t) => {
-  const dir = seedStore('ses_a', 1790700592771);
-  if (dir === null) return t.skip('runtime has no built-in sqlite reader');
+  const fs = require('node:fs');
+  const os = require('node:os');
+  const path = require('node:path');
+  let DatabaseSync;
+  try {
+    ({ DatabaseSync } = require('node:sqlite'));
+  } catch {
+    return t.skip('runtime has no built-in sqlite reader');
+  }
+  // A Kilo that renamed its table: the query fails, and that must read as
+  // "no record", not as an error that takes the frame down.
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'radar-kilo-'));
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+  const db = new DatabaseSync(path.join(dir, 'kilo.db'));
+  db.exec('CREATE TABLE sessions (id TEXT PRIMARY KEY, updated INTEGER)');
+  db.prepare('INSERT INTO sessions (id, updated) VALUES (?, ?)').run('ses_a', 1790700592771);
+  db.close();
   withKiloDir(dir, () => {
-    // A session id that is not there is the only shape that must stay neutral;
-    // a store whose schema moved is handled by the same catch and is covered
-    // by the missing-store case above.
-    assert.equal(activity.recover('kilo', ''), null);
+    assert.equal(activity.recover('kilo', 'ses_a'), null);
   });
+});
+
+// Opening is how a SQLite store gets created; a reader must never leave one
+// behind where Kilo has not made its own.
+test('kilo recovery never creates a store that is not there', (t) => {
+  const fs = require('node:fs');
+  const os = require('node:os');
+  const path = require('node:path');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'radar-kilo-'));
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+  withKiloDir(dir, () => {
+    assert.equal(activity.recover('kilo', 'ses_a'), null);
+  });
+  assert.equal(fs.existsSync(path.join(dir, 'kilo.db')), false, 'an empty kilo.db was created');
 });
 
 test('recovery without a session id stays null for every agent', () => {

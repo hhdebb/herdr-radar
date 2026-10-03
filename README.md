@@ -175,9 +175,9 @@ three times.
 A pane that was already open before this plugin started has no stamp of its own, so its last
 turn is recovered from the session's own record where the CLI keeps one — Claude's and Codex's
 transcripts, and for Kilo Code the session's own `time_updated` row in `~/.local/share/kilo/kilo.db`.
-That last one needs `node:sqlite`, which exists only from Node 22.5 (and behind a flag on some
-22.x builds); on an older runtime the pane reads as plain idle, which is the answer for an agent
-whose record cannot be followed. The store is opened read-only and only its own row is read: a
+That last one needs Node 22.12 or newer, the first whose built-in `node:sqlite` really opens a
+store read-only; on an older runtime the pane reads as plain idle, which is the answer for an
+agent whose record cannot be followed. The store is opened read-only and only its own row is read: a
 store-wide timestamp is not used, because it would shade a stale pane fresh whenever a different
 Kilo pane happened to be busy.
 
