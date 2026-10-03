@@ -433,6 +433,49 @@ const cases = [
     'rows: a blank tab name replaces the title with nothing',
   ],
 
+  // lib/palette.js / lib/managed-config.js — a Spaces row over Herdr's
+  // sixteen-token limit took every user's config down in 1.3.21.
+  [
+    'lib/palette.js',
+    'brandVendors.slice(0, SPACE_ROW_TOKEN_LIMIT - SPACE_ROW_FIXED_CELLS)',
+    'brandVendors.slice()',
+    'config: the Spaces mark row grows past sixteen tokens (shipped v1.3.21-v1.4.0)',
+  ],
+  [
+    'lib/managed-config.js',
+    'const unparsable = checkedWrite(report.file, next, backup(report.file));',
+    'const unparsable = (backup(report.file), writeAtomic(report.file, next, identity.TMP_SUFFIX), null);',
+    'config: the appearance switch writes a block Herdr cannot parse (shipped v1.0.0-v1.4.0)',
+    true,
+    'test/appearance-write.test.js',
+  ],
+
+  [
+    'lib/state.js',
+    'if (!(await clearRetiredSpaceTokens(source, workspaceId))) return false;',
+    '',
+    'spaces: a working mark a vendor lost stays on the workspace, counted against its 32 keys',
+    true,
+    'test/spaces-row-limit.test.js',
+  ],
+  [
+    'lib/managed-config.js',
+    'if (topLevelRows(block.slice(open + 1, close)).some((row) => tokensIn(row) > ROW_TOKEN_LIMIT)) return true;',
+    '',
+    'config: a block broken by 1.3.21 is not recognised, so an upgrade does not repair it',
+    true,
+    'test/spaces-row-limit.test.js',
+  ],
+
+  [
+    'lib/managed-config.js',
+    '  const block = neutralize(text.slice(start, end));',
+    '  const block = text.slice(start, end);',
+    'config: a bracket inside a rule reads as an over-full row, rewriting a valid block',
+    true,
+    'test/spaces-row-limit.test.js',
+  ],
+
   // lib/workspace-order.js — the order must settle or it loops over IPC.
   [
     'lib/workspace-order.js',
