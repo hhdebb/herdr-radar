@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.4.2 — 2026-10-04
+
+- **`group_indent = 0` keeps the headers.** Zero indent used to mean a flat
+  list: the workspace headers and the gaps between groups went with the
+  indent, so there was no way to save the two columns and still see which
+  project a session belongs to. Now `0` only drops the indent — headers and
+  gaps stay, and no tree corners are drawn. If you set `0` to get a flat
+  list, use `prefix+a` (the recent-first order) instead.
+  [#31](https://github.com/hhdebb/herdr-radar/pull/31) by @sleistner.
+
 ## 1.4.1 — 2026-10-04
 
 - **Herdr reads your config again.** 1.3.21 gave three more vendors a
