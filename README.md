@@ -246,6 +246,8 @@ the config file and restarts the daemon.
 | `group_gap` | `true` | a blank row between groups |
 | `split_corner` | `false` | hang the other panes of a split screen off the first with a `├─` corner |
 | `reorder_workspaces` | `false` | make Herdr's workspace indices follow Radar's activity order |
+| `parent_token` | `""` | workspace token whose value names an open parent workspace id; overrides git grouping |
+| `parent_label_token` | `""` | workspace token whose value names a family when its parent is absent |
 | `row_label` | `title` | what names an agent row: `title`, `tab` (the tab's name) or `both`; replaces `show_tab` |
 | `trim_group_prefix` | `true` | drop the workspace name from a title when the header above already shows it |
 | `worktree_mark` | `U+F418` | the mark on a worktree header, needs a Nerd Font; empty for none |
@@ -267,6 +269,36 @@ workspaces with nothing running keep their relative order at the end, and the re
 while the panel is handed back to Herdr's own order. It is off by default because it changes
 the global Spaces order, which every connected client sees, and because the order then moves
 as you work — the number that reaches a project today is not the one that reaches it tomorrow.
+
+### Grouping by another plugin's tokens
+
+A plugin that manages projects can publish workspace tokens such as
+`project_parent` (an open workspace id) and `project_name` (a family label).
+Tell Radar which names to read in its plugin config:
+
+```toml
+parent_token = "project_parent"
+parent_label_token = "project_name"
+```
+
+Put `project_name` on members only, because a workspace with that label and
+no honoured parent is drawn under a header of that label, even when it is
+the project's own workspace or the only member.
+
+A member's parent token overrides its git parent. Any workspace named as a
+valid token parent stays top-level: its own parent token and git parent are
+ignored, keeping token families one level deep. Self-links and unknown ids
+are ignored; in a chain A → B → C, A joins B and B stays top-level; in a cycle
+neither link is honoured. An ignored link falls back to the family label,
+then to git grouping, unless the workspace is itself a token parent.
+A checkout placed in a token family stops serving as a git parent; its
+token-free worktrees remain separate git orphans.
+
+Members with only a label share one header. If an open token parent carries
+that label, they join its family instead. The active view keeps families
+together; recent stays flat. `reorder_workspaces` keeps families together in
+Spaces with the parent first. Without these settings, grouping and Spaces rows
+keep their existing behavior.
 
 Herdr leaves the workspace jump **unbound by default** — `switch_tab` ships as `prefix+1..9`,
 the workspace one does not ship at all — so bind it before expecting the keys to do anything:

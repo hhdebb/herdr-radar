@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- **Workspace families can come from another plugin.** `parent_token` names
+  the token carrying an open parent workspace id; `parent_label_token` names
+  the family label, shared under one header when no parent is open. Token
+  parents override git grouping and stay top-level. Families stay together
+  in the active view and workspace ordering; recent stays flat.
+  For example, `project_parent` and `project_name` group a project's members.
+  Both settings are off by default.
+
 ## 1.4.2 — 2026-10-04
 
 - **`group_indent = 0` keeps the headers.** Zero indent used to mean a flat
