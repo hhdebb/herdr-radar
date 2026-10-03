@@ -186,19 +186,20 @@ Gemini are told apart there too.
 
 ## Which agents it knows
 
-Twenty-four vendors have a mark of their own:
+Twenty-seven vendors have a mark of their own:
 
 <!-- prettier-ignore -->
 | | | | |
 | --- | --- | --- | --- |
 | <img src="assets/marks/amp.svg" width="15" align="top"> Amp | <img src="assets/marks/agy.svg" width="15" align="top"> Antigravity | <img src="assets/marks/claude.svg" width="15" align="top"> Claude Code | <img src="assets/marks/cline.svg" width="15" align="top"> Cline |
-| <img src="assets/marks/codex.svg" width="15" align="top"> Codex | <img src="assets/marks/copilot.svg" width="15" align="top"> Copilot | <img src="assets/marks/cursor.svg" width="15" align="top"> Cursor | <img src="assets/marks/deepseek.svg" width="15" align="top"> DeepSeek |
-| <img src="assets/marks/devin.svg" width="15" align="top"> Devin | <img src="assets/marks/gemini.svg" width="15" align="top"> Gemini | <img src="assets/marks/glm.svg" width="15" align="top"> GLM | <img src="assets/marks/gpt.svg" width="15" align="top"> GPT |
-| <img src="assets/marks/grok.svg" width="15" align="top"> Grok | <img src="assets/marks/hermes.svg" width="15" align="top"> Hermes | <img src="assets/marks/kilo.svg" width="15" align="top"> Kilo | <img src="assets/marks/kimi.svg" width="15" align="top"> Kimi |
-| <img src="assets/marks/kiro.svg" width="15" align="top"> Kiro | <img src="assets/marks/maki.svg" width="15" align="top"> Maki | <img src="assets/marks/mastracode.svg" width="15" align="top"> Mastra | <img src="assets/marks/omp.svg" width="15" align="top"> Oh My Pi |
-| <img src="assets/marks/opencode.svg" width="15" align="top"> OpenCode | <img src="assets/marks/pi.svg" width="15" align="top"> Pi | <img src="assets/marks/qodercli.svg" width="15" align="top"> Qoder | <img src="assets/marks/qwen.svg" width="15" align="top"> Qwen |
+| <img src="assets/marks/codex.svg" width="15" align="top"> Codex | <img src="assets/marks/copilot.svg" width="15" align="top"> Copilot | <img src="assets/marks/crush.svg" width="15" align="top"> Crush | <img src="assets/marks/cursor.svg" width="15" align="top"> Cursor |
+| <img src="assets/marks/deepseek.svg" width="15" align="top"> DeepSeek | <img src="assets/marks/devin.svg" width="15" align="top"> Devin | <img src="assets/marks/gemini.svg" width="15" align="top"> Gemini | <img src="assets/marks/glm.svg" width="15" align="top"> GLM |
+| <img src="assets/marks/gpt.svg" width="15" align="top"> GPT | <img src="assets/marks/grok.svg" width="15" align="top"> Grok | <img src="assets/marks/hermes.svg" width="15" align="top"> Hermes | <img src="assets/marks/kilo.svg" width="15" align="top"> Kilo |
+| <img src="assets/marks/kimchi.svg" width="15" align="top"> Kimchi | <img src="assets/marks/kimi.svg" width="15" align="top"> Kimi | <img src="assets/marks/kiro.svg" width="15" align="top"> Kiro | <img src="assets/marks/maki.svg" width="15" align="top"> Maki |
+| <img src="assets/marks/mastracode.svg" width="15" align="top"> Mastra | <img src="assets/marks/muse.svg" width="15" align="top"> Muse | <img src="assets/marks/omp.svg" width="15" align="top"> Oh My Pi | <img src="assets/marks/opencode.svg" width="15" align="top"> OpenCode |
+| <img src="assets/marks/pi.svg" width="15" align="top"> Pi | <img src="assets/marks/qodercli.svg" width="15" align="top"> Qoder | <img src="assets/marks/qwen.svg" width="15" align="top"> Qwen | |
 
-Herdr detects three more — Droid, Letta and Muse — and none publishes a mark this project can use.
+Herdr detects two more — Droid and Letta — and neither publishes a mark this project can use.
 Those rows behave like any other — state, colour, ordering, grouping — they just wear the
 generic mark instead of one of their own. A pull request adding either is welcome; the marks
 for Antigravity and Kiro arrived that way.
@@ -302,7 +303,7 @@ terminal and reopen it. macOS keeps an extra cache: `killall fontd fontworker`, 
 Another font claimed the same Private Use Area — CJK fonts often do. The terminal must map the
 codepoints to `Herdr Agent Icons Max`; adding it as a fallback family is not enough. Ghostty /
 kitty: `herdr plugin action invoke hhdebb.herdr-radar.install-font` writes the map. Other
-terminals: map `U+E1A0–U+E1B7` and `U+E1C0–U+E1C5` by hand. Terminals with no codepoint map
+terminals: map `U+E1A0–U+E1BA` and `U+E1C0–U+E1C5` by hand. Terminals with no codepoint map
 (Windows Terminal, iTerm): use `dist/JetBrainsMonoHerdr-Regular.ttf` as the terminal font —
 JetBrains Mono with the icons patched in.
 
@@ -392,8 +393,9 @@ Windows); delete it by hand if you want nothing left.
 
 One resident daemon, woken by Herdr's event stream, takes a snapshot from `herdr agent list`
 each frame and writes only states, groups and sort keys as sidebar tokens. No network; outside
-Herdr's config and its own state directory it reads one thing, the tail of a session's own
-transcript, to give panes older than the plugin a last-activity time. Like every Herdr plugin
+Herdr's config and its own state directory it reads one thing, a session's own record — the
+tail of its transcript, or for Kilo Code its row in Kilo's store — to give panes older than the
+plugin a last-activity time. Like every Herdr plugin
 it runs as your user and Herdr does not sandbox it — read `herdr-plugin.toml` and `bin/` before
 installing if that matters to you.
 

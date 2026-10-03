@@ -238,7 +238,18 @@ const counted = [
   ],
 ];
 // Spelled-out numerals, only as far as this project can plausibly grow.
-const WORDS = ['Twenty-one', 'Twenty-two', 'Twenty-three', 'Twenty-four', 'Twenty-five', 'Twenty-six'];
+const WORDS = [
+  'Twenty-one',
+  'Twenty-two',
+  'Twenty-three',
+  'Twenty-four',
+  'Twenty-five',
+  'Twenty-six',
+  'Twenty-seven',
+  'Twenty-eight',
+  'Twenty-nine',
+  'Thirty',
+];
 const CJK = [
   '\u4e8c\u5341\u4e00',
   '\u4e8c\u5341\u4e8c',
@@ -246,6 +257,10 @@ const CJK = [
   '\u4e8c\u5341\u56db',
   '\u4e8c\u5341\u4e94',
   '\u4e8c\u5341\u516d',
+  '\u4e8c\u5341\u4e03',
+  '\u4e8c\u5341\u516b',
+  '\u4e8c\u5341\u4e5d',
+  '\u4e09\u5341',
 ];
 const asNumber = (text) => {
   if (/^\d+$/.test(text)) return Number(text);

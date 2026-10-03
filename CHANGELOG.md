@@ -1,18 +1,18 @@
 # Changelog
 
-## Unreleased
+## 1.3.21 — 2026-10-03
 
-- **Kilo Code sessions recover their last turn.** Kilo was already drawn with
-  its own mark and colour, but a pane that predated this plugin's daemon had no
-  freshness stamp and read as plain idle forever — which is most of what the
-  stale tier exists to catch. Kilo keeps no per-session file it rewrites as the
-  session runs; its record is a SQLite store holding the session's own
-  last-updated time, so that row is read instead. Read-only, one row, no
-  dependencies. `node:sqlite` only exists from Node 22.5 and is flag-gated on
-  some 22.x builds, so an older runtime answers "no record" and the pane reads
-  as plain idle — the answer this plugin already gives for an agent it cannot
-  follow. The store's own mtime is deliberately not used as a fallback: it
-  would shade one stale pane fresh whenever a different Kilo pane was busy.
+- **Three more agents wear their own mark.** Kimchi (CAST AI's coding
+  agent) gets the chili from its site, in its published orange
+  ([#37](https://github.com/hhdebb/herdr-radar/pull/37) by @testy-cool).
+  Muse Code publishes no mark of its own and its site signs it with Meta's,
+  so that is the mark it wears here, in Meta blue
+  ([#38](https://github.com/hhdebb/herdr-radar/pull/38) by @stevmills).
+  Crush reports itself to Herdr as `crush` and now wears the pixel heart it
+  draws in its own source, in the heart's cheek pink
+  ([#36](https://github.com/hhdebb/herdr-radar/issues/36), asked for by
+  @unbegrenzt). The icon range is `U+E1A0–U+E1BA` now; a terminal mapped by
+  hand needs the new end.
 
 ## 1.3.20 — 2026-09-28
 
