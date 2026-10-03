@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.4.1 — 2026-10-04
+
+- **Herdr reads your config again.** 1.3.21 gave three more vendors a
+  working mark of their own in the Spaces column, which took that row to
+  eighteen tokens. Herdr refuses a sidebar row over sixteen, and with it the
+  whole `config.toml` — so on any machine where the plugin rewrote its
+  sidebar block, Herdr ran on its defaults and every setting of your own was
+  ignored (`herdr config check` reports `sidebar rows may contain at most 16
+  tokens`). Nine vendors now keep a working mark of their own and the rest
+  share the generic one; every vendor's logo keeps its colour. **Nothing to
+  do by hand**: the daemon recognises the broken block on start, rewrites it
+  and reloads Herdr.
+
+  Two things let it through, and both are closed: the row-limit guard only
+  counted the Agents rows, and the switch that follows your desktop's light
+  and dark wrote the block without checking it — every write now goes through
+  `herdr config check` and is rolled back if Herdr cannot parse it.
+
 ## 1.4.0 — 2026-10-03
 
 - **A Kilo Code session that predates the daemon gets its freshness back.**
