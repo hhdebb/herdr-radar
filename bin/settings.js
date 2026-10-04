@@ -131,6 +131,12 @@ const FIELDS = [
   },
   { key: 'group_gap', kind: 'bool', fallback: true, help: 'A blank row between workspace groups.' },
   {
+    key: 'show_age',
+    kind: 'bool',
+    fallback: false,
+    help: 'Put how long ago a pane last worked on its row: now, 7m, 3h, 2d.',
+  },
+  {
     key: 'split_corner',
     kind: 'bool',
     fallback: false,

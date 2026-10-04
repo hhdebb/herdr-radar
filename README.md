@@ -244,6 +244,7 @@ the config file and restarts the daemon.
 | `activity_stale_minutes` | `120` | how long without a turn before the row dims |
 | `group_indent` | `2` | spaces per tree level; `0` keeps headers and gaps but draws no tree lines; use `prefix+a` for the flat list |
 | `group_gap` | `true` | a blank row between groups |
+| `show_age` | `false` | add how long ago a pane last worked to its row: `now`, `7m`, `3h`, `2d` |
 | `split_corner` | `false` | hang the other panes of a split screen off the first with a `├─` corner |
 | `reorder_workspaces` | `false` | make Herdr's workspace indices follow Radar's activity order |
 | `row_label` | `title` | what names an agent row: `title`, `tab` (the tab's name) or `both`; replaces `show_tab` |
