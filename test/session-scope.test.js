@@ -56,6 +56,23 @@ test('two named sessions get different runtime directories', () => {
   assert.notEqual(one, two);
 });
 
+test('the default session keeps the state directory itself', () => {
+  // The header above states this, and nothing asserted it: the lock, the stop
+  // marker and control.sock all lived in stateRoot before per-session scoping.
+  // Move them and an upgrade orphans the daemon that is still running.
+  assert.equal(pathsWith(undefined).runtimeRoot, pathsWith(undefined).stateRoot);
+  // A socket outside sessions/ is the default session too.
+  const plain = pathsWith('/home/u/.config/herdr/herdr.sock');
+  assert.equal(plain.runtimeRoot, plain.stateRoot);
+});
+
+test('a named session gets its own directory, the default keeps stateRoot', () => {
+  const named = pathsWith('/home/u/.config/herdr/sessions/clients/herdr.sock');
+  const fallback = pathsWith(undefined);
+  assert.notEqual(named.runtimeRoot, named.stateRoot);
+  assert.notEqual(named.runtimeRoot, fallback.runtimeRoot);
+});
+
 test('the runtime directory sits inside the state directory', () => {
   // Caches stay shared on purpose: `tabbar.txt` is read back by an absolute
   // path that configure.js writes into Herdr's config.toml, and that file is
