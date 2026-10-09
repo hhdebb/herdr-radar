@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.4.4 — 2026-10-09
+
+- **Every named session gets its sidebar.** Herdr gives every session the
+  same plugin state directory, so with two sessions running (`herdr session`)
+  the second one found the first one's daemon, took it as its own and
+  stopped — and that daemon only ever reports to the first session. The
+  second session's rows came out blank. Each named session now runs its own
+  daemon, with its own lock and control endpoint under
+  `runtime-<session>/`; the default session keeps the paths it always had,
+  so a single-session setup changes nothing and nothing migrates.
+  [#43](https://github.com/hhdebb/herdr-radar/pull/43) by @pmochine, fixing
+  [#25](https://github.com/hhdebb/herdr-radar/issues/25) reported by
+  @smkamranqadri; tested on macOS and Linux by @ronzyfonzy and @guim4dev.
+
+- **Each session's tab bar shows its own directory.** With a daemon per
+  session, all of them wrote the one tab-bar cache, so a session could show
+  another session's directory. The line is now kept per session, and the
+  tab-bar command reads the file of the session it runs in. The daemon
+  rewrites the tab-bar block on its next start; nothing to do by hand.
+
 ## 1.4.3 — 2026-10-09
 
 - **A pane moved to another workspace keeps its row.** After `herdr pane
