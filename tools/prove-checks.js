@@ -573,6 +573,32 @@ const cases = [
     'test/pane-move.test.js',
   ],
 
+  // lib/paths.js, lib/tabline.js, lib/managed-config.js — one tab-bar line per session.
+  [
+    'lib/paths.js',
+    "named ? `tabbar-${session}.txt` : 'tabbar.txt'",
+    "'tabbar.txt'",
+    "sessions: every session writes one tab-bar file, so each shows the other's directory",
+    true,
+    'test/tabbar-session.test.js',
+  ],
+  [
+    'lib/tabline.js',
+    'const CACHE = () => (ensureDir(stateRoot), tabbarCache());',
+    "const CACHE = () => (ensureDir(stateRoot), tabbarCache(''));",
+    "sessions: a named session's daemon publishes to the default session's file",
+    true,
+    'test/tabbar-session.test.js',
+  ],
+  [
+    'lib/managed-config.js',
+    'return text.slice(start, end + BLOCK_END.length) !== block();',
+    'return false;',
+    'sessions: an upgrade keeps the old single-file tab-bar block',
+    true,
+    'test/tabbar-session.test.js',
+  ],
+
   // lib/palette.js — every sidebar ink clears the contrast floor (#5).
   [
     'lib/palette.js',

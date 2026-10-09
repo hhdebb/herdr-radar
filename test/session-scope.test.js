@@ -74,9 +74,8 @@ test('a named session gets its own directory, the default keeps stateRoot', () =
 });
 
 test('the runtime directory sits inside the state directory', () => {
-  // Caches stay shared on purpose: `tabbar.txt` is read back by an absolute
-  // path that configure.js writes into Herdr's config.toml, and that file is
-  // shared by every session.
+  // The caches stay in stateRoot on purpose: they are session-agnostic, and
+  // the tab-bar line picks its own per-session file (tabbar-session.test.js).
   const paths = pathsWith('/home/u/.config/herdr/sessions/clients/herdr.sock');
   assert.equal(path.dirname(paths.runtimeRoot), paths.stateRoot);
 });
