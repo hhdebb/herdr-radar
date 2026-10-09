@@ -320,7 +320,7 @@ const cases = [
   // lib/frame.js — a closed pane takes its other write backoffs with it.
   [
     'lib/frame.js',
-    "for (const kind of ['line', 'logo', 'sort']) this.failedAt.delete(`${kind}:${pane}`);",
+    "for (const kind of ['line', 'logo', 'sort', 'clear']) this.failedAt.delete(`${kind}:${pane}`);",
     '',
     'writes: a closed pane keeps an earlier backoff alive (#21)',
     true,
@@ -545,6 +545,32 @@ const cases = [
     'groups: a split corner survives zero indent',
     true,
     'test/indent-zero.test.js',
+  ],
+
+  // lib/frame.js, lib/state.js — a moved pane (new id, same terminal) is not a closed one.
+  [
+    'lib/frame.js',
+    '    this.followMoves(entries, now);\n',
+    '',
+    'moves: a moved pane is cleared under its old id, wiping the live row (shipped)',
+    true,
+    'test/pane-move.test.js',
+  ],
+  [
+    'lib/state.js',
+    "terminal: typeof a.terminal_id === 'string' ? a.terminal_id : '',",
+    "terminal: '',",
+    'moves: the snapshot carries no terminal id, so a move reads as a close (shipped)',
+    true,
+    'test/pane-move.test.js',
+  ],
+  [
+    'lib/frame.js',
+    '        if (map.has(from)) map.set(to, map.get(from));',
+    '        if (false) map.set(to, map.get(from));',
+    'moves: a moved pane loses its last turn and held badge (shipped)',
+    true,
+    'test/pane-move.test.js',
   ],
 
   // lib/palette.js — every sidebar ink clears the contrast floor (#5).
