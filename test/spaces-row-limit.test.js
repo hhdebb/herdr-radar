@@ -62,3 +62,22 @@ test('retired working marks are cleared once, before the state is written', asyn
     'the retired marks were cleared a second time',
   );
 });
+
+// `show_age` adds a token to the agent row, and the row already sits at 14 of
+// 16. Off it must not move at all; on it must still fit, or turning a setting
+// on would take the whole config.toml down the way 1.3.21 did.
+test('the agent row fits whether or not show_age is on', () => {
+  const config = require('../lib/config');
+  const before = config.showAge;
+  try {
+    for (const showAge of [false, true]) {
+      config.showAge = showAge;
+      for (const variant of ['light', 'dark']) {
+        const block = managed.sidebarBlock(variant);
+        assert.equal(managed.blockOverLimit(`${block}\n`), false, `${variant}, show_age=${showAge}`);
+      }
+    }
+  } finally {
+    config.showAge = before;
+  }
+});
