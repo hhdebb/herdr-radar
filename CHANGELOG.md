@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.4.3 — 2026-10-09
+
+- **A pane moved to another workspace keeps its row.** After `herdr pane
+  move … --workspace … --new-tab` the pane gets a new id, while Herdr still
+  answers to the old one with the moved pane — so clearing the old id as a
+  closed pane wiped the live one, and its row lost its logo and title until
+  the daemon restarted. A move is recognised now by the terminal the pane
+  keeps across it: what the daemon remembers follows the pane, and the old id
+  is dropped without a clear.
+  [#47](https://github.com/hhdebb/herdr-radar/pull/47) by @rmarescu.
+
+- **A dark Mac no longer turns light under load.** The macOS appearance
+  probe read any non-zero exit as light mode, including a probe that timed
+  out — which then switched Herdr's theme to the light one on a dark
+  desktop. A probe that never answered now leaves the theme alone.
+  [#48](https://github.com/hhdebb/herdr-radar/pull/48) by @pmochine.
+
 ## 1.4.2 — 2026-10-04
 
 - **`group_indent = 0` keeps the headers.** Zero indent used to mean a flat
