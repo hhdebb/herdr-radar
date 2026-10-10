@@ -148,6 +148,12 @@ const FIELDS = [
     help: "What names an agent row: the session's title, its tab's name, or both.",
   },
   {
+    key: 'row_format',
+    kind: 'text',
+    fallback: '',
+    help: 'A template for the row text, replacing row_label: {title} {tab} {pane} {name} {agent} {workspace}; {a|b} takes the first set; [..] drops when a field in it is empty. Empty = off.',
+  },
+  {
     key: 'trim_group_prefix',
     kind: 'bool',
     fallback: true,
@@ -280,6 +286,8 @@ function show(field, value) {
       return value === '' ? `${DIM}none${R}` : `${codepoint(value)}  ${value}`;
     case 'color':
       return value === '' ? `${DIM}theme's own${R}` : String(value);
+    case 'text':
+      return value === '' ? `${DIM}off${R}` : String(value);
     default:
       return String(value);
   }
@@ -435,6 +443,8 @@ class Editor {
       }
       return this.values.set(field, raw);
     }
+    // The file's reader has no escapes: a quote inside the value would end it.
+    if (raw.includes('"')) return (this.status = `${WARN}a double quote cannot be saved${R}`);
     this.values.set(field, raw);
   }
 

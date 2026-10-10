@@ -247,6 +247,7 @@ the config file and restarts the daemon.
 | `split_corner` | `false` | hang the other panes of a split screen off the first with a `├─` corner |
 | `reorder_workspaces` | `false` | make Herdr's workspace indices follow Radar's activity order |
 | `row_label` | `title` | what names an agent row: `title`, `tab` (the tab's name) or `both`; replaces `show_tab` |
+| `row_format` | unset | a template for the row text, instead of `row_label`: `"[{pane} · ]{title}"` |
 | `trim_group_prefix` | `true` | drop the workspace name from a title when the header above already shows it |
 | `worktree_mark` | `U+F418` | the mark on a worktree header, needs a Nerd Font; empty for none |
 | `follow_appearance` | `true` | switch Herdr's theme with the desktop's light/dark |
@@ -259,6 +260,15 @@ the title — what `show_tab = true` did, which still reads as `both`. Pick `tab
 when you name tabs after their sessions, so the name is not written twice. A
 tab-only row keeps its title when the tab was never named (Herdr labels such a
 tab with its number).
+
+`row_format` writes the row yourself when none of those three fit. Fields:
+`{title}` (the session's title), `{tab}` (the tab's name, empty when it was never
+named), `{pane}` (the label from `herdr pane rename`), `{name}` (the name from
+`herdr agent rename`), `{agent}` (the vendor) and `{workspace}`. `{pane|tab}` takes
+the first of them that is set, and a `[...]` section disappears when a field
+inside it is empty, so `"[{pane} · ]{title}"` shows `api · Fix login` on a
+labelled pane and just `Fix login` on the rest. A row that comes out empty falls
+back to its title. Set, it replaces `row_label`.
 
 Set `reorder_workspaces = true` to make Herdr's actual workspace order follow Radar's
 most-active-first order, so the Spaces list reads in the same order as the Agents panel and
