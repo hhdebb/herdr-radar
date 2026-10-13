@@ -12,20 +12,39 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
-const MODULES = ['../lib/config', '../lib/managed-config'];
+const MODULES = ['../lib/config', '../lib/logos', '../lib/managed-config'];
 
+// What the sidebar block reads from the machine, pinned so the golden fixture
+// is the same everywhere: `variant = "text"` skips the icon-font probe, and
+// the detector ids Herdr has downloaded (rows_by_agent) come from a state dir
+// of our own instead of ~/.local/state.
+const PINNED_AGENTS = ['claude', 'codex', 'gemini'];
+const PINNED_CONFIG = 'variant = "text"\n';
+
+// To regenerate test/fixtures/sidebar-block-dark.base.toml (it is the block as
+// 1.4.4, dd42772, wrote it, under the pins above): check that commit out in a
+// worktree and run, with HERDR_PLUGIN_CONFIG_DIR holding `variant = "text"` and
+// XDG_STATE_HOME/herdr/agent-detection/remote holding claude/codex/gemini .toml,
+//   node -e "process.stdout.write(require('./lib/managed-config').sidebarBlock('dark'))"
+// Only regenerate it when the block is meant to change.
+//
 // config.js reads its file once, at require time, so every case starts from a
 // clean module cache and a config directory of its own.
 function load(toml) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'radar-extra-row-'));
-  if (toml !== null) fs.writeFileSync(path.join(dir, 'config.toml'), toml);
+  fs.writeFileSync(path.join(dir, 'config.toml'), PINNED_CONFIG + (toml ?? ''));
   process.env.HERDR_PLUGIN_CONFIG_DIR = dir;
+  const remote = path.join(dir, 'state', 'herdr', 'agent-detection', 'remote');
+  fs.mkdirSync(remote, { recursive: true });
+  for (const id of PINNED_AGENTS) fs.writeFileSync(path.join(remote, `${id}.toml`), '');
+  process.env.XDG_STATE_HOME = path.join(dir, 'state');
   for (const name of MODULES) delete require.cache[require.resolve(name)];
   return { config: require('../lib/config'), managed: require('../lib/managed-config'), dir };
 }
 
 test.afterEach(() => {
   delete process.env.HERDR_PLUGIN_CONFIG_DIR;
+  delete process.env.XDG_STATE_HOME;
   for (const name of MODULES) delete require.cache[require.resolve(name)];
 });
 
