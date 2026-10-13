@@ -276,6 +276,20 @@ the config file and restarts the daemon.
 | `colors.active_row_bg_light` | `#b9cdf2` | selected-row fill for a light theme; empty keeps the theme's own |
 | `colors.active_row_bg_dark` | `#414868` | selected-row fill for a dark theme |
 
+`[extra_row]` adds one row to every agent entry, for tokens another plugin
+publishes. Herdr takes a single `[ui.sidebar.agents]` table, so a plugin that wants
+its own row cannot add one without writing that table, and a table you write
+yourself makes Radar leave its own sidebar out. List the tokens here instead: each
+key is a token name without the `$`, each value the `#rrggbb` it is drawn in, in the
+order they should appear. Names that are not `[a-z0-9_]+` and colours that are not
+`#rrggbb` are skipped, and a row holds at most 16.
+
+```toml
+[extra_row]
+agent_model = "#8b8e9c"
+agent_mem = "#8b8e9c"
+```
+
 `row_label` picks what names an agent row. `title` is the session's own title,
 `tab` is the name of the tab it runs in, and `both` puts the tab name in front of
 the title — what `show_tab = true` did, which still reads as `both`. Pick `tab`
