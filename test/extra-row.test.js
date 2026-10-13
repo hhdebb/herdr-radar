@@ -39,14 +39,15 @@ function agentRows(block) {
   return lines;
 }
 
-test('without [extra_row] the sidebar block is what it always was', () => {
-  const none = load(null);
-  const empty = load('row_label = "title"\n');
-  assert.deepEqual(none.config.extraRow(), []);
-  for (const variant of ['light', 'dark']) {
-    assert.equal(none.managed.sidebarBlock(variant), empty.managed.sidebarBlock(variant), variant);
-    assert.ok(!none.managed.sidebarBlock(variant).includes('agent_model'));
-  }
+test('without [extra_row] the sidebar block is byte-for-byte what 1.4.4 generated', () => {
+  const { config, managed } = load(null);
+  assert.deepEqual(config.extraRow(), []);
+  // Generated once from dd42772 (before this setting existed). An empty extra
+  // row, or any stray cell, shows up here; comparing two runs of the new code
+  // could not see it.
+  const golden = fs.readFileSync(path.join(__dirname, 'fixtures', 'sidebar-block-dark.base.toml'), 'utf8');
+  assert.equal(managed.sidebarBlock('dark'), golden);
+  for (const row of agentRows(golden)) assert.ok(row.endsWith('], ["$gap"]]'), row.slice(-120));
 });
 
 test('extraRow() keeps the names and colours in file order', () => {
@@ -68,7 +69,7 @@ test('every agent row list carries the extra row just before the gap', () => {
 
 test('a bad name or colour is skipped, and the row stops at sixteen tokens', () => {
   const bad = load(
-    '[extra_row]\nBad-Name = "#112233"\nagent_model = "red"\nagent_ctx_ok = "#12345"\nok_one = "#112233"\n',
+    '[extra_row]\nBad-Name = "#112233"\nagent_model = "red"\nagent_ctx_ok = "#12345"\n7 = "#112233"\nok_one = "#112233"\n',
   );
   assert.deepEqual(bad.config.extraRow(), [{ token: 'ok_one', fg: '#112233' }]);
 

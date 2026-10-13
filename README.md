@@ -281,7 +281,7 @@ publishes. Herdr takes a single `[ui.sidebar.agents]` table, so a plugin that wa
 its own row cannot add one without writing that table, and a table you write
 yourself makes Radar leave its own sidebar out. List the tokens here instead: each
 key is a token name without the `$`, each value the `#rrggbb` it is drawn in, in the
-order they should appear. Names that are not `[a-z0-9_]+` and colours that are not
+order they should appear. Names that are not `[a-z_][a-z0-9_]*` and colours that are not
 `#rrggbb` are skipped, and a row holds at most 16.
 
 ```toml
