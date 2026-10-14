@@ -5,11 +5,12 @@ require('../lib/node-version');
 
 // Cycle the Agents panel between this plugin's orders and Herdr's own.
 //
-//   node bin/agent-view.js            cycle: off -> active -> recent -> off
+//   node bin/agent-view.js            cycle: off -> active -> recent -> fixed -> off
 //   node bin/agent-view.js --flip     active <-> recent (never lands on off)
 //   node bin/agent-view.js --native   everything Herdr's way <-> everything ours
 //   node bin/agent-view.js --active   grouped, both levels by last activity
 //   node bin/agent-view.js --recent   flat, every pane by last activity
+//   node bin/agent-view.js --fixed    grouped, in Herdr's own order
 //   node bin/agent-view.js --off      back to Herdr's own order
 //   node bin/agent-view.js --reapply  startup: restore whatever was chosen
 //
@@ -40,6 +41,7 @@ const { detachedNode } = require('../lib/spawn');
 const SAID = {
   grouped: 'agent view: active (grouped, recent first)',
   recent: 'agent view: recent (flat)',
+  fixed: 'agent view: fixed (grouped, Herdr order)',
   null: 'agent view: back to panel order',
 };
 
@@ -88,11 +90,13 @@ async function main() {
           ? { cmd: 'view', set: 'grouped' }
           : flag === '--recent'
             ? { cmd: 'view', set: 'recent' }
-            : flag === '--off'
-              ? { cmd: 'view', set: 'off' }
-              : flag === '--reapply'
-                ? { cmd: 'view', set: current }
-                : { cmd: 'view', op: 'cycle' };
+            : flag === '--fixed'
+              ? { cmd: 'view', set: 'fixed' }
+              : flag === '--off'
+                ? { cmd: 'view', set: 'off' }
+                : flag === '--reapply'
+                  ? { cmd: 'view', set: current }
+                  : { cmd: 'view', op: 'cycle' };
 
   const reply = await control.request(message, 3000);
   if (reply?.ok && reply.applied) {

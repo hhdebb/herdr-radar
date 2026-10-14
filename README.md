@@ -135,8 +135,9 @@ billing
 
 One row per agent: logo, title, colour by state, motion and marks in front of the title. Two
 orders: `active` keeps the groups and ranks by activity at both levels; `recent` is a flat
-list by activity — `prefix+a` flips between them. The whole panel can be handed back to
-Herdr's own rendering from the settings popup.
+list by activity — `prefix+a` flips between them. A third, `fixed`, keeps the groups but
+not the motion: projects stay in Herdr's own order and each worktree sits under its repo. The
+whole panel can be handed back to Herdr's own rendering from the settings popup.
 
 ## What the colours mean
 
@@ -235,7 +236,7 @@ the config file and restarts the daemon.
 | Option | Default | Does |
 | --- | --- | --- |
 | `agents_panel` | `plugin` | this plugin's panel, or `herdr` for Herdr's own |
-| `order` | `active` | `active` grouped by activity / `recent` flat / `off` Herdr's order |
+| `order` | `active` | `active` grouped by activity / `recent` flat / `fixed` grouped in Herdr's order / `off` Herdr's order |
 | `variant` | `auto` | logos from the icon font (`font`), plain Unicode (`text`), or `none`; `auto` recognises the font the plugin installed |
 | `done_hold` | `until_seen` | keep the tick until the pane is focused, or a number of seconds |
 | `blocked_hold` | `true` | keep the question mark until the agent works again |

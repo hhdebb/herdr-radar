@@ -514,11 +514,21 @@ const cases = [
   // Herdr's order and the drawn group furniture disagree.
   [
     'lib/frame.js',
-    'const sortPair = `${sortKey}|${wsKey}|${tabKey}`;',
-    'const sortPair = `${sortKey}|${wsKey}`;',
+    'const sortPair = `${sortKey}|${wsKey}|${tabKey}|${familyKey}`;',
+    'const sortPair = `${sortKey}|${wsKey}|${familyKey}`;',
     'sort keys: a stale tab_key is never rewritten',
     true,
     'test/sort-keys.test.js',
+  ],
+
+  // The fixed order: a worktree family ranks parent first, in Herdr's order.
+  [
+    'lib/frame.js',
+    "familyKeys.set(ws, `${String(position.get(family)).padStart(4, '0')}-${family === ws ? '0' : '1'}`);",
+    "familyKeys.set(ws, `${String(position.get(ws)).padStart(4, '0')}-${family === ws ? '0' : '1'}`);",
+    'fixed order: a worktree ranks by its own position, not its family root',
+    true,
+    'test/fixed-order.test.js',
   ],
 
   // Group indent — zero removes only tree drawing, not group furniture.

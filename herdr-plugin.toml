@@ -67,8 +67,8 @@ command = ["node", "bin/agent-state.js", "--stop"]
 # command.
 [[actions]]
 id = "view-toggle"
-title = "Agents: cycle order (active / recent / off)"
-description = "Cycle the Agents panel: grouped by activity, flat by activity, or the panel's own order."
+title = "Agents: cycle order (active / recent / fixed / off)"
+description = "Cycle the Agents panel: grouped by activity, flat by activity, grouped in Herdr's order, or the panel's own order."
 command = ["node", "bin/agent-view.js"]
 
 [[actions]]
