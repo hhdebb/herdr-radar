@@ -137,6 +137,18 @@ const FIELDS = [
     help: 'Hang the other panes of a split screen off the first with a corner; off draws them as plain rows.',
   },
   {
+    key: 'multi_machine',
+    kind: 'bool',
+    fallback: false,
+    help: "Put this machine's name after each workspace header, for sessions on saved SSH machines. Set it on each machine.",
+  },
+  {
+    key: 'machine_label',
+    kind: 'text',
+    fallback: '',
+    help: 'The name multi_machine shows, e.g. web · Machine-One. Empty = the hostname.',
+  },
+  {
     key: 'row_label',
     kind: 'enum',
     options: ['title', 'tab', 'both'],
@@ -280,6 +292,8 @@ function show(field, value) {
       return value === '' ? `${DIM}none${R}` : `${codepoint(value)}  ${value}`;
     case 'color':
       return value === '' ? `${DIM}theme's own${R}` : String(value);
+    case 'text':
+      return value === '' ? `${DIM}none${R}` : String(value);
     default:
       return String(value);
   }
@@ -434,6 +448,10 @@ class Editor {
         return (this.status = `${WARN}not a colour (hex, rgb(...) or a name)${R}`);
       }
       return this.values.set(field, raw);
+    }
+    // `literal` writes the value between double quotes as it is.
+    if (field.kind === 'text' && /["\\]/.test(raw)) {
+      return (this.status = `${WARN}no quotes or backslashes${R}`);
     }
     this.values.set(field, raw);
   }
