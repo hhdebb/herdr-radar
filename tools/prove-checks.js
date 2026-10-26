@@ -651,6 +651,25 @@ const cases = [
     true,
     'test/blocked-authoritative-idle.test.js',
   ],
+
+  // lib/state.js, lib/config.js — `multi_machine` names the machine on the
+  // header, and only while it is on.
+  [
+    'lib/state.js',
+    "      const machine = config.machineLabel ? ` · ${config.machineLabel}` : '';\n",
+    "      const machine = '';\n",
+    'machines: the header drops the machine, so a remote session reads as a local one',
+    true,
+    'test/machine-label.test.js',
+  ],
+  [
+    'lib/config.js',
+    '    raw.multi_machine === true\n',
+    '    true\n',
+    'machines: the label shows with multi_machine off, so a single-machine panel changes',
+    true,
+    'test/machine-label.test.js',
+  ],
 ];
 
 function withEdit(file, from, to, label, expectCaught = true, via = 'check') {

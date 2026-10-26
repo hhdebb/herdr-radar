@@ -261,6 +261,8 @@ the config file and restarts the daemon.
 | `group_indent` | `2` | spaces per tree level; `0` keeps headers and gaps but draws no tree lines; use `prefix+a` for the flat list |
 | `group_gap` | `true` | a blank row between groups |
 | `split_corner` | `false` | hang the other panes of a split screen off the first with a `├─` corner |
+| `multi_machine` | `false` | put the machine's name after each workspace header, `web · Machine-One`, for sessions on saved SSH machines; set it on each machine, since each one names its own |
+| `machine_label` | `""` | the name `multi_machine` shows; empty uses the hostname |
 | `reorder_workspaces` | `false` | make Herdr's workspace indices follow Radar's activity order |
 | `row_label` | `title` | what names an agent row: `title`, `tab` (the tab's name) or `both`; replaces `show_tab` |
 | `trim_group_prefix` | `true` | drop the workspace name from a title when the header above already shows it |
