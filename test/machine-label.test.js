@@ -11,6 +11,7 @@ const assert = require('node:assert/strict');
 const config = require('../lib/config');
 const herdr = require('../lib/herdr');
 const state = require('../lib/state');
+const { Frame } = require('../lib/frame');
 
 const entries = ['app', 'feature', 'hotfix', 'other'].map((ws) => ({
   pane: `${ws}:p1`,
@@ -97,4 +98,38 @@ test('multi_machine gates the label, and an empty label is the hostname', (t) =>
     'Machine-One',
   );
   assert.equal(load('multi_machine = true').machineLabel, os.hostname().split('.')[0]);
+});
+
+// The selected machine's view sorts every machine's panes as one list, and
+// each server numbers its own workspaces: two machines' `w8`, busy in the same
+// minute, must still come out as two groups, not one zipped together.
+function wsKeysOn(t, label, panes) {
+  const before = config.machineLabel;
+  config.machineLabel = label;
+  t.after(() => {
+    config.machineLabel = before;
+  });
+  const frame = new Frame('test');
+  frame.lastWorkingAt = new Map(panes.map((pane) => [pane, 60000]));
+  const list = panes.map((pane) => ({ pane, workspace: 'w8', tab: pane.replace('p', 't') }));
+  return frame.sortKeys(list, new Map(), new Map()).wsKeys.get('w8');
+}
+
+test('on: same workspace id on two machines does not interleave', (t) => {
+  const one = wsKeysOn(t, 'Machine-One', ['w8:p1', 'w8:p2']);
+  const two = wsKeysOn(t, 'Machine-Two', ['w8:p1', 'w8:p2']);
+  assert.notEqual(one, two, 'equal keys let a stable sort keep the two machines zipped');
+  // As Herdr receives them: the machines' rows alternating.
+  const rows = [
+    { machine: 1, key: one },
+    { machine: 2, key: two },
+    { machine: 1, key: one },
+    { machine: 2, key: two },
+  ];
+  const sorted = rows.sort((a, b) => (a.key < b.key ? 1 : a.key > b.key ? -1 : 0)).map((row) => row.machine);
+  assert.deepEqual(sorted, [2, 2, 1, 1]);
+});
+
+test('off: the workspace key carries no machine', (t) => {
+  assert.equal(wsKeysOn(t, '', ['w8:p1']), '000000000001-w8-1-000000000001-w8');
 });
