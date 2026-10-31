@@ -682,6 +682,14 @@ const cases = [
     true,
     'test/machine-label.test.js',
   ],
+  [
+    'lib/frame.js',
+    "    const machine = config.machineLabel ? `${config.machineLabel}-` : '';\n",
+    "    const machine = '';\n",
+    "machines: two machines' same workspace id ties in the sort and their rows interleave",
+    true,
+    'test/machine-label.test.js',
+  ],
 
   // bin/agent-state.js — `state-restart` starts only once the old daemon has
   // gone (#65).
