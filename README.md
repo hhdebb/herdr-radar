@@ -16,6 +16,12 @@
 
 ---
 
+> [!NOTE]
+> **Maintenance mode.** Herdr's new app, herdr-app, now has much of this built in: grouping,
+> vendor logos and clearer working status. herdr-radar stays a plugin for the Herdr TUI: it keeps
+> up with new Herdr releases and bugs get fixed, and small fixes are welcome as PRs, but it won't
+> get new features. See [#73](https://github.com/hhdebb/herdr-radar/issues/73).
+
 ## What it is
 
 A [Herdr](https://herdr.dev) plugin that turns the sidebar's Agents list into something you

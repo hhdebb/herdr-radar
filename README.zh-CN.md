@@ -16,6 +16,12 @@
 
 ---
 
+> [!NOTE]
+> **维护模式。** Herdr 新出的 herdr-app 已经内置了这里的大部分功能：分组、厂商 logo、
+> 更清楚的工作状态。herdr-radar 继续作为 Herdr TUI 的插件存在：会跟上 Herdr 的新版本、
+> 修 bug，小的修复欢迎提 PR，但不再加新功能。详见
+> [#73](https://github.com/hhdebb/herdr-radar/issues/73)。
+
 ## 这是什么
 
 一个 [Herdr](https://herdr.dev) 插件，把侧边栏的 Agents 列表改成一块能读的面板：谁在干活、
