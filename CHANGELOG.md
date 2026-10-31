@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.5.1 — 2026-10-31
+
+- **Radar is in maintenance mode.** Herdr's new app, herdr-app, now has
+  much of what radar adds built in. Radar stays a plugin for the Herdr
+  TUI: it keeps up with new Herdr releases, bugs get fixed, and small
+  fixes are welcome as PRs, but it won't get new features. The READMEs say
+  so at the top.
+  [#73](https://github.com/hhdebb/herdr-radar/issues/73)
+
+- **Two machines' workspaces with the same id no longer mix.** Each Herdr
+  server numbers its own workspaces, so two saved machines can both have a
+  `w8`. When both were busy in the same minute their rows could interleave
+  under one header. With `multi_machine` on, the machine label now keeps
+  them apart in the sort. Nothing changes while it is off.
+  [#72](https://github.com/hhdebb/herdr-radar/pull/72) by @wapenshaw.
+
+- **For contributors: the tests no longer stop a running radar on
+  Windows.** On Windows, one test could reach the daemon you were running
+  and end it, which left the sidebar frozen until a `state-restart`. The
+  test now uses a control channel of its own.
+
 ## 1.5.0 — 2026-10-27
 
 - **Workspace headers can name their machine.** Herdr shows sessions from
