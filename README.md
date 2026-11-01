@@ -290,6 +290,16 @@ agent_model = "#8b8e9c"
 agent_mem = "#8b8e9c"
 ```
 
+`[extra_space_row]` is the same for the Spaces panel: one more row under every
+workspace entry, for workspace tokens another plugin publishes. `[ui.sidebar.spaces]`
+is a single table as well, and Radar's to write. Same rules as `[extra_row]`.
+
+```toml
+[extra_space_row]
+project_icon = "#a8abbd"
+project = "#a8abbd"
+```
+
 `row_label` picks what names an agent row. `title` is the session's own title,
 `tab` is the name of the tab it runs in, and `both` puts the tab name in front of
 the title — what `show_tab = true` did, which still reads as `both`. Pick `tab`
