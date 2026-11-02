@@ -66,7 +66,7 @@ Ghostty / kitty 的配置存在的话写入码位映射。
 
 > [!NOTE]
 > 需要 Herdr 0.9.0+ 和 Node 18+。Windows 11 和 macOS 实测过，Linux 尚未实测。
-> 没有按码位映射的终端（Windows Terminal、iTerm）和 Windows 上标签栏不跟 `cd` 的问题，
+> 没有按码位映射的终端（Windows Terminal、iTerm、Alacritty）和 Windows 上标签栏不跟 `cd` 的问题，
 > 见「常见问题」。
 
 绑两个键（可选，粘进 `config.toml`）。都走 Herdr 的 prefix，默认 `ctrl+b`，不会和面板里的
@@ -225,7 +225,7 @@ exec claude "$@"
 | --- | --- | --- |
 | `agents_panel` | `plugin` | 用本插件的面板，或 `herdr` 原生面板 |
 | `order` | `active` | `active` 分组按活跃度 / `recent` 扁平 / `off` Herdr 的顺序 |
-| `variant` | `auto` | logo 来源：`font` 图标字体 / `text` 普通 Unicode / `none`。`auto` 认插件自己装的字体 |
+| `variant` | `auto` | logo 来源：`font` 图标字体 / `text` 普通 Unicode / `none`。`auto` 只要插件的字体装上了就用 `font`，不管终端能不能映射（见「常见问题」） |
 | `done_hold` | `until_seen` | 勾保持到聚焦面板，或改成秒数 |
 | `blocked_hold` | `true` | 问号保持到 agent 重新干活 |
 | `idle_grace_seconds` | `2.5` | idle 持续这么久才算一轮结束 |
@@ -259,13 +259,15 @@ exec claude "$@"
 </details>
 
 <details>
-<summary><b>logo 画成了一个随机汉字</b></summary>
+<summary><b>logo 或状态标记画成了一个随机汉字</b></summary>
 
 这段私有区被别的字体抢了，CJK 字体尤其常见。终端必须按码位映射到 `Herdr Agent Icons Max`，
 只加进 fallback 家族不够。Ghostty / kitty 跑一次 `herdr plugin action invoke hhdebb.herdr-radar.install-font`
 就写好了；其他终端手动映射 `U+E1A0–U+E1BA` 和 `U+E1C0–U+E1C5`。没有按码位映射能力的终端
-（Windows Terminal、iTerm）改用 `dist/JetBrainsMonoHerdr-Regular.ttf` 当主字体，它是打进了
-图标的 JetBrains Mono。
+（Windows Terminal、iTerm、Alacritty）有两条路：改用 `dist/JetBrainsMonoHerdr-Regular.ttf`
+当主字体，它是打进了图标的 JetBrains Mono；或者设 `variant = "text"`（`prefix+,`），所有标记
+都用普通 Unicode 画。`variant = "auto"` 替你做不了这个选择：它只看得到字体装没装，看不到终端
+能不能映射。
 
 Ghostty 上只有 `ghostty +show-face` 能说明映射到底生没生效，`+show-config` 和 `+list-fonts`
 两种情况下都一样通过。v1.3.7 及以前写进去的那行是失效的（家族名带了引号），

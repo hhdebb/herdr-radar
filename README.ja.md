@@ -73,7 +73,7 @@ herdr plugin install hhdebb/herdr-radar
 
 > [!NOTE]
 > Herdr 0.9.0 以上、Node 18 以上が必要です。Windows 11 と macOS で確認済み、Linux は未確認です。
-> コードポイント割り当てのないターミナル（Windows Terminal、iTerm）と、Windows でタブバーが `cd` に
+> コードポイント割り当てのないターミナル（Windows Terminal、iTerm、Alacritty）と、Windows でタブバーが `cd` に
 > 追従しない件は「トラブルシューティング」を参照してください。
 
 キーは 2 つ、任意です。`config.toml` に貼り付けます。どちらも Herdr のプレフィックス（既定は
@@ -247,7 +247,7 @@ exec claude "$@"
 | --- | --- | --- |
 | `agents_panel` | `plugin` | このプラグインのパネル、または `herdr` で Herdr 本来のパネル |
 | `order` | `active` | `active` グループ化してアクティビティ順 / `recent` フラット / `off` Herdr の順序 |
-| `variant` | `auto` | ロゴをアイコンフォント（`font`）、通常の Unicode（`text`）、なし（`none`）。`auto` はプラグインが入れたフォントを認識 |
+| `variant` | `auto` | ロゴをアイコンフォント（`font`）、通常の Unicode（`text`）、なし（`none`）。`auto` はプラグインのフォントが入っていれば、ターミナルが割り当てられるかに関係なく `font`（「トラブルシューティング」参照） |
 | `done_hold` | `until_seen` | チェックをフォーカスまで保持、または秒数 |
 | `blocked_hold` | `true` | エージェントが再び動くまでクエスチョンマークを保持 |
 | `idle_grace_seconds` | `2.5` | ターン終了とみなすまで idle が続く必要のある時間 |
@@ -283,14 +283,17 @@ exec claude "$@"
 </details>
 
 <details>
-<summary><b>ロゴがランダムな漢字で描かれる</b></summary>
+<summary><b>ロゴや状態マークがランダムな漢字で描かれる</b></summary>
 
 別のフォントが同じ私用領域を主張しています（CJK フォントによくあります）。ターミナルは
 `Herdr Agent Icons Max` にコードポイント単位で割り当てる必要があり、フォールバックに加えるだけでは
 足りません。Ghostty / kitty：`herdr plugin action invoke hhdebb.herdr-radar.install-font` で書き込めます。
 それ以外：`U+E1A0–U+E1BA` と `U+E1C0–U+E1C5` を手で割り当ててください。コードポイント割り当ての
-ないターミナル（Windows Terminal、iTerm）は `dist/JetBrainsMonoHerdr-Regular.ttf` をターミナルの
-フォントに——アイコンを埋め込んだ JetBrains Mono です。
+ないターミナル（Windows Terminal、iTerm、Alacritty）は方法が 2 つあります。
+`dist/JetBrainsMonoHerdr-Regular.ttf` をターミナルのフォントにする（アイコンを埋め込んだ
+JetBrains Mono です）か、`variant = "text"`（`prefix+,`）にしてすべてのマークを通常の Unicode で
+描くかです。`variant = "auto"` はこの判断を代わりにできません。フォントが入っているかは分かっても、
+ターミナルが割り当てられるかは分からないからです。
 
 Ghostty では割り当てが解決したかを答えられるのは `ghostty +show-face` だけで、
 `+show-config` も `+list-fonts` もどちらでも通ります。v1.3.7 以前が書いた行は
