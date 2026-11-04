@@ -247,6 +247,36 @@ The row then wears the GLM mark and name. `--clear-display-agent` takes it back.
 this plugin does not recognise is ignored rather than blanking the row, so a human label
 such as `Claude: auth` still leaves the Claude mark in place.
 
+### Giving another agent a mark
+
+Anything Herdr reports under a name this plugin has no mark for gets no logo cell, and its
+row then starts two cells to the left of every other row. A wrapper that registers itself as
+`mywrapper` is the usual case. Give it a mark in `config.toml`:
+
+```toml
+[logos]
+mywrapper = "\u{F0BA4}"
+
+[logo_colors]
+mywrapper = "#d08770"
+```
+
+The key is the agent id Herdr reports; the value is the string drawn in the logo cell. Write a
+codepoint as `\uXXXX` or `\u{XXXXX}`, or paste the glyph itself. `[logo_colors]` is optional
+and takes `#rrggbb`; without an entry the mark is drawn in the plain ink, like any vendor with
+no brand hue. The Spaces column shows the mark too.
+
+- An entry for a vendor in the table above replaces its built-in mark (and `[logo_colors]`
+  replaces its colour).
+- The mark is the same in every `variant`, because you chose it for your terminal. `variant =
+  "none"` still shows no logos at all.
+- An entry that is not a string, or is empty, is skipped and the rest still apply. A `logos` that
+  is not a table is ignored.
+- At most six agents can have a colour of their own here, which is what is left of the sixteen
+  rules Herdr allows per cell once the built-in vendors have theirs.
+- It is read from the file only, there is no setting for it in the popup. Run `state-restart`
+  after editing: the sidebar block is rewritten when the table changes.
+
 ## Settings
 
 `prefix+,` opens the settings popup: `↑↓` select, `←→` change, `↵` edit a text value, `r`

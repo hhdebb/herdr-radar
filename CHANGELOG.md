@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- **Give an agent Radar has no mark for one of your own.** Herdr reports a
+  wrapper under whatever name it registers as, and an agent with no mark got
+  no logo cell, so its row started at the spinner, two cells left of every
+  other row. A `[logos]` table in `config.toml` now maps an agent id to the
+  glyph drawn for it, and an optional `[logo_colors]` table colours it. An
+  entry for a built-in vendor replaces its mark, and `variant = "none"` still
+  hides every logo. A malformed table is ignored. See *Giving another agent a
+  mark* in the README, which is English-only for this change.
+
 ## 1.5.1 — 2026-10-31
 
 - **Radar is in maintenance mode.** Herdr's new app, herdr-app, now has
