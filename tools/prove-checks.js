@@ -700,6 +700,22 @@ const cases = [
   ],
   [
     'lib/state.js',
+    '      repoIds.set(ws.workspace_id, repoId(key));\n',
+    '      repoIds.set(ws.workspace_id, repoId(ws.worktree.repo_name));\n',
+    'groups: two unrelated repos that share a name merge into one family',
+    true,
+    'test/orphan-family.test.js',
+  ],
+  [
+    'lib/state.js',
+    "  return `repo:${crypto.createHash('sha1').update(key).digest('hex').slice(0, 10)}`;\n",
+    '  return `repo:${key}`;\n',
+    'groups: a repo path in $ws_key runs past the 80 characters Herdr keeps',
+    true,
+    'test/orphan-family.test.js',
+  ],
+  [
+    'lib/state.js',
     'group_parent: orphan && !joined && name !== null',
     'group_parent: orphan && name !== null',
     'groups: every orphan of one repo repeats the repo row',
