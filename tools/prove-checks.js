@@ -707,6 +707,24 @@ const cases = [
     'test/orphan-family.test.js',
   ],
 
+  // lib/font.js — a terminal config that refuses the write (#78).
+  [
+    'lib/font.js',
+    '    return err.code ?? err.message;\n',
+    '    throw err;\n',
+    'font: a read-only terminal config aborts the install',
+    true,
+    'test/readonly-terminal-config.test.js',
+  ],
+  [
+    'lib/font.js',
+    '            ...terminal.lines.map((line) => `  ${line}`),\n',
+    '',
+    'font: the note about a read-only config leaves out the lines to add',
+    true,
+    'test/readonly-terminal-config.test.js',
+  ],
+
   // bin/agent-state.js — `state-restart` starts only once the old daemon has
   // gone (#65).
   [
