@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.5.2 — 2026-11-05
+
+- **Worktrees of one repo stay together when its main checkout runs no
+  agent.** Each one used to get its own repo row, and a project busy in
+  between could split them, so the panel showed the same repo twice. They
+  now rank as one family under a single repo row, the same way worktrees
+  do when the checkout has an agent.
+  [#77](https://github.com/hhdebb/herdr-radar/pull/77) by @bautiRL.
+
+- **A read-only terminal config no longer aborts the install.** When a
+  Ghostty or kitty config can't be written, for example because Home
+  Manager links it into the Nix store, setup skips that file, prints the
+  lines to add yourself, and still updates the other configs. Removing the
+  map handles a read-only file the same way.
+  [#78](https://github.com/hhdebb/herdr-radar/issues/78)
+
+- **The READMEs now cover Alacritty.** Alacritty has no way to map
+  codepoints to a font, so status marks can show as an unrelated character
+  even with the icon font installed. The troubleshooting entry lists it
+  and adds `variant = "text"` as a second way out.
+  [#74](https://github.com/hhdebb/herdr-radar/issues/74)
+
 ## 1.5.1 — 2026-10-31
 
 - **Radar is in maintenance mode.** Herdr's new app, herdr-app, now has
